@@ -1,0 +1,15 @@
+{
+  "name": "WebRTC stats viewer",
+    "description": "Display WebRTC stats for ongoing A/V streams",
+    "author": "Philippe Sultan",
+    "version": "1.0.0",
+    "manifest_version": 2,
+    "minimum_chrome_version": "34",
+    "icons": {
+    },
+    "content_scripts": [ {
+      "js": [ "content.js" ],
+      "run_at": "document_start",
+      "matches": [ "https://*/*", "http://localhost:*/*" ]
+    }]
+}
