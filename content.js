@@ -1,25 +1,35 @@
-const inject =
-  "(" +
-  function () {
-    // Pushes every newly created RTCPeerConnection to an array.
-    window._webrtc_getstats = Object.assign({}, window._webrtc_getstats, {
-      peerConnections: [],
-    });
+const interval = 5; // in seconds
 
-    class customRTCPeerConnection extends RTCPeerConnection {
-      constructor(configuration) {
-        super(configuration);
+const loopGetStats = () => {
+  console.log("I would like to get stats from those RTCPeerConnections...");
 
-        window._webrtc_getstats.peerConnections.push(this);
-      }
+  if (!window._webrtc_getstats?.peerConnections) {
+    return;
+  }
+
+  window._webrtc_getstats.peerConnections.forEach((pc) => {
+    if (pc.iceConnectionState === "completed") {
+      pc.getReceivers().forEach((receiver) => {
+        console.log("receiver :", receiver);
+
+        if (receiver?.track?.kind === "audio") {
+          receiver.getStats().then((stats) => {
+            console.log("Receiver stats :", stats);
+          });
+        }
+      });
+
+      pc.getSenders().forEach((sender) => {
+        console.log("sender :", sender);
+
+        if (sender?.track?.kind === "audio") {
+          sender.getStats().then((stats) => {
+            console.log("Sender stats :", stats);
+          });
+        }
+      });
     }
+  });
+};
 
-    window.RTCPeerConnection = customRTCPeerConnection;
-  } +
-  ")();";
-
-const script = document.createElement("script");
-script.textContent = inject;
-const parentNode = document.head || document.documentElement;
-parentNode.insertBefore(script, parentNode.firstChild);
-script.parentNode.removeChild(script);
+setTimeout(loopGetStats, interval * 1000);

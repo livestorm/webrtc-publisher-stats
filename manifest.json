@@ -8,8 +8,11 @@
     "icons": {
     },
     "content_scripts": [ {
-      "js": [ "content.js" ],
+      "js": [ "injectedScript.js" ],
       "run_at": "document_start",
       "matches": [ "https://*/*", "http://localhost:*/*" ]
-    }]
+    }],
+    "web_accessible_resources": [
+      "content.js"
+    ]
 }
