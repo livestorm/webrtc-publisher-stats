@@ -30,6 +30,8 @@ const loopGetStats = () => {
       });
     }
   });
+
+  setTimeout(loopGetStats, interval * 1000);
 };
 
 setTimeout(loopGetStats, interval * 1000);
