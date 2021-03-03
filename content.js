@@ -1,5 +1,35 @@
 const interval = 5; // in seconds
 
+const findDOMElementForTrack = (track) => {
+  let foundElement = null;
+
+  document.querySelectorAll("video").forEach((element) => {
+    if (!element?.srcObject) {
+      return;
+    }
+
+    const audioTracksFromDOM = element.srcObject.getAudioTracks();
+    const videoTracksFromDOM = element.srcObject.getVideoTracks();
+
+    const foundAudioTrack = audioTracksFromDOM.find((e) => e === track);
+    const foundVideoTrack = videoTracksFromDOM.find((e) => e === track);
+
+    if (foundAudioTrack) {
+      console.log("Found DOM element for audio track : ", element);
+      foundElement = element;
+      return;
+    }
+
+    if (foundVideoTrack) {
+      console.log("Found DOM element for video track : ", element);
+      foundElement = element;
+      return;
+    }
+  });
+
+  return foundElement;
+};
+
 const loopGetStats = () => {
   console.log("I would like to get stats from those RTCPeerConnections...");
 
