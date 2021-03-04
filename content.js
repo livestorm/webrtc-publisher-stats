@@ -1,3 +1,4 @@
+const _dom_prefix = "webrtc-getstats-extension";
 const interval = 5; // in seconds
 
 const findDOMElementForTrack = (track) => {
@@ -54,11 +55,15 @@ const loopGetStats = () => {
           });
 
           const element = findDOMElementForTrack(receiver.track);
-          const div = document.createElement("div");
-          div.innerText = "Audio";
+          const container = document.createElement("div");
+          container.className = _dom_prefix + "-container";
+          container.innerText = "Audio";
 
-          if (element) {
-            element.parentNode.insertBefore(div, element);
+          if (
+            element &&
+            !element.parentNode.querySelector("." + container.className)
+          ) {
+            element.parentNode.insertBefore(container, element);
           }
 
           console.log(`[${receiver.track.kind}][Receiver] element :`, element);
@@ -87,11 +92,15 @@ const loopGetStats = () => {
           });
 
           const element = findDOMElementForTrack(sender.track);
-          const div = document.createElement("div");
-          div.innerText = "Video";
+          const container = document.createElement("div");
+          container.className = _dom_prefix + "-container";
+          container.innerText = "Video";
 
-          if (element) {
-            //            element.parentNode.insertBefore(div, element);
+          if (
+            element &&
+            !element.parentNode.querySelector("." + container.className)
+          ) {
+            element.parentNode.insertBefore(container, element);
           }
 
           console.log(`[${sender.track.kind}][Sender] element :`, element);
