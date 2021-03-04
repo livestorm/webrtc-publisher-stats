@@ -40,22 +40,61 @@ const loopGetStats = () => {
   window._webrtc_getstats.peerConnections.forEach((pc) => {
     if (pc.iceConnectionState === "completed") {
       pc.getReceivers().forEach((receiver) => {
-        console.log("receiver :", receiver);
-
-        if (receiver?.track?.kind === "audio") {
+        if (receiver?.track) {
+          console.log(`[${receiver.track.kind}][Receiver] stats ------`);
           receiver.getStats().then((stats) => {
-            console.log("Receiver stats :", stats);
+            stats.forEach((stat) => {
+              stat.type == "candidate-pair" &&
+                stat.nominated &&
+                console.log(
+                  "stat.currentRoundTripTime :",
+                  stat.currentRoundTripTime
+                );
+            });
           });
+
+          const element = findDOMElementForTrack(receiver.track);
+          const div = document.createElement("div");
+          div.innerText = "Audio";
+
+          if (element) {
+            element.parentNode.insertBefore(div, element);
+          }
+
+          console.log(`[${receiver.track.kind}][Receiver] element :`, element);
         }
       });
 
       pc.getSenders().forEach((sender) => {
         console.log("sender :", sender);
 
-        if (sender?.track?.kind === "audio") {
+        if (sender?.track) {
+          console.log(`[${sender.track.kind}][Sender] stats ------`);
+          console.log(
+            `[${sender.track.kind}][Sender] sender.track :`,
+            sender.track
+          );
           sender.getStats().then((stats) => {
-            console.log("Sender stats :", stats);
+            console.log(`[${sender.track.kind}][Sender] stats :`, stats);
+            stats.forEach((stat) => {
+              stat.type == "candidate-pair" &&
+                stat.nominated &&
+                console.log(
+                  "stat.currentRoundTripTime :",
+                  stat.currentRoundTripTime
+                );
+            });
           });
+
+          const element = findDOMElementForTrack(sender.track);
+          const div = document.createElement("div");
+          div.innerText = "Video";
+
+          if (element) {
+            //            element.parentNode.insertBefore(div, element);
+          }
+
+          console.log(`[${sender.track.kind}][Sender] element :`, element);
         }
       });
     }
