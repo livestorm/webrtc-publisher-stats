@@ -49,22 +49,36 @@ const loopGetStats = () => {
         return;
       }
 
-      console.log(`[${receiver.track.kind}][Receiver] stats ------`);
-      receiver.getStats().then((stats) => {
-        stats.forEach((stat) => {
-          stat.type == "candidate-pair" &&
-            stat.nominated &&
-            console.log(
-              "stat.currentRoundTripTime :",
-              stat.currentRoundTripTime
-            );
-        });
-      });
-
       const element = findDOMElementForTrack(receiver.track);
+      if (!element) {
+        // Cannot find DOM element that matches with MediaTrack
+        return;
+      }
+
       const container = document.createElement("div");
       container.className = _dom_prefix + "-container";
       container.innerText = "Audio";
+
+      const trackStats = {
+        audio: {},
+        video: {},
+      };
+
+      console.log(`[${receiver.track.kind}][Receiver] stats ------`);
+      receiver.getStats().then((stats) => {
+        stats.forEach((stat) => {
+          switch (stat.type) {
+            case "candidate-pair": {
+              if (stat.nominated) {
+                trackStats[receiver.track.kind] = stat.currentRoundTripTime;
+              }
+              break;
+            }
+            default:
+              break;
+          }
+        });
+      });
 
       if (
         element &&
@@ -83,6 +97,21 @@ const loopGetStats = () => {
         return;
       }
 
+      const element = findDOMElementForTrack(sender.track);
+      if (!element) {
+        // Cannot find DOM element that matches with MediaTrack
+        return;
+      }
+
+      const container = document.createElement("div");
+      container.className = _dom_prefix + "-container";
+      container.innerText = "Video";
+
+      const trackStats = {
+        audio: {},
+        video: {},
+      };
+
       console.log(`[${sender.track.kind}][Sender] stats ------`);
       console.log(
         `[${sender.track.kind}][Sender] sender.track :`,
@@ -91,19 +120,18 @@ const loopGetStats = () => {
       sender.getStats().then((stats) => {
         console.log(`[${sender.track.kind}][Sender] stats :`, stats);
         stats.forEach((stat) => {
-          stat.type == "candidate-pair" &&
-            stat.nominated &&
-            console.log(
-              "stat.currentRoundTripTime :",
-              stat.currentRoundTripTime
-            );
+          switch (stat.type) {
+            case "candidate-pair": {
+              if (stat.nominated) {
+                trackStats[sender.track.kind] = stat.currentRoundTripTime;
+              }
+              break;
+            }
+            default:
+              break;
+          }
         });
       });
-
-      const element = findDOMElementForTrack(sender.track);
-      const container = document.createElement("div");
-      container.className = _dom_prefix + "-container";
-      container.innerText = "Video";
 
       if (
         element &&
