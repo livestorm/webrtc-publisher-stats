@@ -1,10 +1,15 @@
 const _dom_prefix = "webrtc-getstats-extension";
 const interval = 5; // in seconds
+const senderStats = {};
+const receiverStats = {};
+
+window._webrtc_getstats.senderStats = senderStats;
+window._webrtc_getstats.receiverStats = receiverStats;
 
 const findDOMElementForTrack = (track) => {
   let foundElement = null;
 
-  document.querySelectorAll("video").forEach((element) => {
+  document.querySelectorAll("audio, video").forEach((element) => {
     if (!element?.srcObject) {
       return;
     }
@@ -16,13 +21,19 @@ const findDOMElementForTrack = (track) => {
     const foundVideoTrack = videoTracksFromDOM.find((e) => e === track);
 
     if (foundAudioTrack) {
-      console.log("Found DOM element for audio track : ", element);
+      console.log(
+        `Found <${element.tagName} /> DOM element for audio track : `,
+        element
+      );
       foundElement = element;
       return;
     }
 
     if (foundVideoTrack) {
-      console.log("Found DOM element for video track : ", element);
+      console.log(
+        `Found <${element.tagName} /> DOM element for audio track : `,
+        element
+      );
       foundElement = element;
       return;
     }
