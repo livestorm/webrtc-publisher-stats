@@ -50,14 +50,23 @@ const loopGetStats = () => {
       }
 
       const element = findDOMElementForTrack(receiver.track);
-      if (!element) {
+      if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
         return;
       }
 
-      const container = document.createElement("div");
-      container.className = _dom_prefix + "-container";
-      container.innerText = "Audio";
+      let container = document.querySelector(
+        "#" + _dom_prefix + "_" + element.srcObject.id
+      );
+
+      if (!container) {
+        // DOM container not found, create it and insert above its <video />
+        // element.
+        const container = document.createElement("div");
+        container.id = _dom_prefix + "_" + element.srcObject.id;
+        container.className = _dom_prefix + "-container";
+        element.parentNode.insertBefore(container, element);
+      }
 
       const trackStats = {
         audio: {},
@@ -69,8 +78,13 @@ const loopGetStats = () => {
         stats.forEach((stat) => {
           switch (stat.type) {
             case "candidate-pair": {
+              console.log(
+                `[${receiver.track.kind}][Receiver][${stat.type}] :`,
+                stat
+              );
               if (stat.nominated) {
                 trackStats[receiver.track.kind] = stat.currentRoundTripTime;
+                container.innerText = trackStats[receiver.track.kind];
               }
               break;
             }
@@ -79,13 +93,6 @@ const loopGetStats = () => {
           }
         });
       });
-
-      if (
-        element &&
-        !element.parentNode.querySelector("." + container.className)
-      ) {
-        element.parentNode.insertBefore(container, element);
-      }
 
       console.log(`[${receiver.track.kind}][Receiver] element :`, element);
     });
@@ -98,14 +105,23 @@ const loopGetStats = () => {
       }
 
       const element = findDOMElementForTrack(sender.track);
-      if (!element) {
+      if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
         return;
       }
 
-      const container = document.createElement("div");
-      container.className = _dom_prefix + "-container";
-      container.innerText = "Video";
+      let container = document.querySelector(
+        "#" + _dom_prefix + "_" + element.srcObject.id
+      );
+
+      if (!container) {
+        // DOM container not found, create it and insert above its <video />
+        // element.
+        container = document.createElement("div");
+        container.id = _dom_prefix + "_" + element.srcObject.id;
+        container.className = _dom_prefix + "-container";
+        element.parentNode.insertBefore(container, element);
+      }
 
       const trackStats = {
         audio: {},
@@ -113,17 +129,17 @@ const loopGetStats = () => {
       };
 
       console.log(`[${sender.track.kind}][Sender] stats ------`);
-      console.log(
-        `[${sender.track.kind}][Sender] sender.track :`,
-        sender.track
-      );
       sender.getStats().then((stats) => {
-        console.log(`[${sender.track.kind}][Sender] stats :`, stats);
         stats.forEach((stat) => {
           switch (stat.type) {
             case "candidate-pair": {
+              console.log(
+                `[${sender.track.kind}][Sender][${stat.type}] :`,
+                stat
+              );
               if (stat.nominated) {
                 trackStats[sender.track.kind] = stat.currentRoundTripTime;
+                container.innerText = trackStats[sender.track.kind];
               }
               break;
             }
@@ -132,13 +148,6 @@ const loopGetStats = () => {
           }
         });
       });
-
-      if (
-        element &&
-        !element.parentNode.querySelector("." + container.className)
-      ) {
-        element.parentNode.insertBefore(container, element);
-      }
 
       console.log(`[${sender.track.kind}][Sender] element :`, element);
     });
