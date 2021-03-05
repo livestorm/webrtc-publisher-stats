@@ -44,12 +44,12 @@ const loopGetStats = () => {
     return;
   }
 
-  window._webrtc_getstats.peerConnections.forEach((pc) => {
+  window._webrtc_getstats.peerConnections.forEach(async (pc) => {
     if (pc.iceConnectionState !== "completed") {
       return;
     }
 
-    pc.getReceivers().forEach((receiver) => {
+    for (const receiver of pc.getReceivers()) {
       if (!receiver?.track) {
         // No RTCRtpReceiver or MediaTrack, return
         return;
@@ -90,11 +90,13 @@ const loopGetStats = () => {
         };
       }
 
-      const trackStats =
-        window._webrtc_getstats.receiverStats[element.srcObject.id].stats;
+      try {
+        const trackStats =
+          window._webrtc_getstats.receiverStats[element.srcObject.id].stats;
 
-      console.log(`[${receiver.track.kind}][Receiver] stats ------`);
-      receiver.getStats().then((stats) => {
+        console.log(`[${receiver.track.kind}][Receiver] stats ------`);
+        const stats = await receiver.getStats();
+
         stats.forEach((stat) => {
           switch (stat.type) {
             case "candidate-pair": {
@@ -112,12 +114,16 @@ const loopGetStats = () => {
               break;
           }
         });
-      });
 
-      console.log(`[${receiver.track.kind}][Receiver] element :`, element);
-    });
+        console.log(`[${receiver.track.kind}][Receiver] element :`, element);
+      } catch (error) {
+        console.log(
+          "[webrtc_getstats_extension] Failed to get stats for receiver"
+        );
+      }
+    }
 
-    pc.getSenders().forEach((sender) => {
+    for (const sender of pc.getSenders()) {
       console.log("sender :", sender);
       if (!sender?.track) {
         // No RTCRtpSender or MediaTrack, return
@@ -159,11 +165,13 @@ const loopGetStats = () => {
         };
       }
 
-      const trackStats =
-        window._webrtc_getstats.senderStats[element.srcObject.id].stats;
+      try {
+        const trackStats =
+          window._webrtc_getstats.senderStats[element.srcObject.id].stats;
 
-      console.log(`[${sender.track.kind}][Sender] stats ------`);
-      sender.getStats().then((stats) => {
+        console.log(`[${sender.track.kind}][Sender] stats ------`);
+        const stats = await sender.getStats();
+
         stats.forEach((stat) => {
           switch (stat.type) {
             case "candidate-pair": {
@@ -181,10 +189,14 @@ const loopGetStats = () => {
               break;
           }
         });
-      });
 
-      console.log(`[${sender.track.kind}][Sender] element :`, element);
-    });
+        console.log(`[${sender.track.kind}][Sender] element :`, element);
+      } catch (error) {
+        console.log(
+          "[webrtc_getstats_extension] Failed to get stats for sender"
+        );
+      }
+    }
   });
 
   setTimeout(loopGetStats, interval * 1000);
