@@ -74,10 +74,24 @@ const loopGetStats = () => {
         element.parentNode.insertBefore(container, element);
       }
 
-      const trackStats = {
-        audio: {},
-        video: {},
-      };
+      if (!window._webrtc_getstats.receiverStats[element.srcObject.id]) {
+        /**
+         * Create stats object for receiver :
+         * - identify it with the corresponding MediaStream id in the DOM
+         * - store the MediaStream track
+         * - gather stats
+         */
+        window._webrtc_getstats.receiverStats[element.srcObject.id] = {
+          track: receiver.track,
+          stats: {
+            audio: {},
+            video: {},
+          },
+        };
+      }
+
+      const trackStats =
+        window._webrtc_getstats.receiverStats[element.srcObject.id].stats;
 
       console.log(`[${receiver.track.kind}][Receiver] stats ------`);
       receiver.getStats().then((stats) => {
@@ -129,10 +143,24 @@ const loopGetStats = () => {
         element.parentNode.insertBefore(container, element);
       }
 
-      const trackStats = {
-        audio: {},
-        video: {},
-      };
+      if (!window._webrtc_getstats.senderStats[element.srcObject.id]) {
+        /**
+         * Create stats object for sender :
+         * - identify it with the corresponding MediaStream id in the DOM
+         * - store the MediaStream track
+         * - gather stats
+         */
+        window._webrtc_getstats.senderStats[element.srcObject.id] = {
+          track: sender.track,
+          stats: {
+            audio: {},
+            video: {},
+          },
+        };
+      }
+
+      const trackStats =
+        window._webrtc_getstats.senderStats[element.srcObject.id].stats;
 
       console.log(`[${sender.track.kind}][Sender] stats ------`);
       sender.getStats().then((stats) => {
