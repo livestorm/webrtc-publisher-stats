@@ -74,7 +74,7 @@ const loopGetStats = () => {
         const container = document.createElement("div");
         container.id = _dom_prefix + "_" + element.srcObject.id;
         container.className = _dom_prefix + "-container";
-        element.parentNode.insertBefore(container, element);
+        element.parentNode.appendChild(container);
       }
 
       if (!window._webrtc_getstats.transporterStats[element.srcObject.id]) {

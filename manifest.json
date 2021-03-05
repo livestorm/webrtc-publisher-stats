@@ -9,6 +9,7 @@
     },
     "content_scripts": [ {
       "js": [ "injectedScript.js" ],
+      "css": ["style.css"],
       "run_at": "document_start",
       "matches": [ "https://*/*", "http://localhost:*/*" ]
     }],
