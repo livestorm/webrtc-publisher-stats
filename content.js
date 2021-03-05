@@ -49,16 +49,19 @@ const loopGetStats = () => {
       return;
     }
 
-    for (const receiver of pc.getReceivers()) {
-      if (!receiver?.track) {
-        // No RTCRtpReceiver or MediaTrack, return
-        return;
+    /**
+     * 'transporter' contains either a RTCRtpReceiver or a RTCRtpSender
+     */
+    for (const transporter of [...pc.getReceivers(), ...pc.getSenders()]) {
+      if (!transporter?.track) {
+        // No RTCRtpReceiver/RTCRtpSender or MediaTrack, return
+        break;
       }
 
-      const element = findDOMElementForTrack(receiver.track);
+      const element = findDOMElementForTrack(transporter.track);
       if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
-        return;
+        break;
       }
 
       let container = document.querySelector(
@@ -74,15 +77,17 @@ const loopGetStats = () => {
         element.parentNode.insertBefore(container, element);
       }
 
-      if (!window._webrtc_getstats.receiverStats[element.srcObject.id]) {
+      if (!window._webrtc_getstats.transporterStats[element.srcObject.id]) {
         /**
-         * Create stats object for receiver :
+         * Create stats object for transporter :
+         * - type : RTCRtpReceiver or RTCRtpSender
          * - identify it with the corresponding MediaStream id in the DOM
          * - store the MediaStream track
          * - gather stats
          */
-        window._webrtc_getstats.receiverStats[element.srcObject.id] = {
-          track: receiver.track,
+        window._webrtc_getstats.transporterStats[element.srcObject.id] = {
+          type: transporter.constructor.name,
+          track: transporter.track,
           stats: {
             audio: {},
             video: {},
@@ -92,96 +97,23 @@ const loopGetStats = () => {
 
       try {
         const trackStats =
-          window._webrtc_getstats.receiverStats[element.srcObject.id].stats;
+          window._webrtc_getstats.transporterStats[element.srcObject.id].stats;
 
-        console.log(`[${receiver.track.kind}][Receiver] stats ------`);
-        const stats = await receiver.getStats();
-
-        stats.forEach((stat) => {
-          switch (stat.type) {
-            case "candidate-pair": {
-              console.log(
-                `[${receiver.track.kind}][Receiver][${stat.type}] :`,
-                stat
-              );
-              if (stat.nominated) {
-                trackStats[receiver.track.kind] = stat.currentRoundTripTime;
-                container.innerText = trackStats[receiver.track.kind];
-              }
-              break;
-            }
-            default:
-              break;
-          }
-        });
-
-        console.log(`[${receiver.track.kind}][Receiver] element :`, element);
-      } catch (error) {
         console.log(
-          "[webrtc_getstats_extension] Failed to get stats for receiver"
+          `[${transporter.track.kind}][${transporter.constructor.name}] stats ------`
         );
-      }
-    }
-
-    for (const sender of pc.getSenders()) {
-      console.log("sender :", sender);
-      if (!sender?.track) {
-        // No RTCRtpSender or MediaTrack, return
-        return;
-      }
-
-      const element = findDOMElementForTrack(sender.track);
-      if (!element || !element.srcObject) {
-        // Cannot find DOM element that matches with MediaTrack
-        return;
-      }
-
-      let container = document.querySelector(
-        "#" + _dom_prefix + "_" + element.srcObject.id
-      );
-
-      if (!container) {
-        // DOM container not found, create it and insert above its <video />
-        // element.
-        container = document.createElement("div");
-        container.id = _dom_prefix + "_" + element.srcObject.id;
-        container.className = _dom_prefix + "-container";
-        element.parentNode.insertBefore(container, element);
-      }
-
-      if (!window._webrtc_getstats.senderStats[element.srcObject.id]) {
-        /**
-         * Create stats object for sender :
-         * - identify it with the corresponding MediaStream id in the DOM
-         * - store the MediaStream track
-         * - gather stats
-         */
-        window._webrtc_getstats.senderStats[element.srcObject.id] = {
-          track: sender.track,
-          stats: {
-            audio: {},
-            video: {},
-          },
-        };
-      }
-
-      try {
-        const trackStats =
-          window._webrtc_getstats.senderStats[element.srcObject.id].stats;
-
-        console.log(`[${sender.track.kind}][Sender] stats ------`);
-        const stats = await sender.getStats();
+        const stats = await transporter.getStats();
 
         stats.forEach((stat) => {
           switch (stat.type) {
             case "candidate-pair": {
               console.log(
-                `[${sender.track.kind}][Sender][${stat.type}] :`,
+                `[${transporter.track.kind}][${transporter.constructor.name}][${stat.type}] :`,
                 stat
               );
               if (stat.nominated) {
-                trackStats[sender.track.kind] = stat.currentRoundTripTime;
-                container.innerText = trackStats[sender.track.kind];
+                trackStats[transporter.track.kind] = stat.currentRoundTripTime;
+                container.innerText = trackStats[transporter.track.kind];
               }
               break;
             }
@@ -190,10 +122,13 @@ const loopGetStats = () => {
           }
         });
 
-        console.log(`[${sender.track.kind}][Sender] element :`, element);
+        console.log(
+          `[${transporter.track.kind}][${transporter.constructor.name}] element :`,
+          element
+        );
       } catch (error) {
         console.log(
-          "[webrtc_getstats_extension] Failed to get stats for sender"
+          "[webrtc_getstats_extension] Failed to get stats for transporter"
         );
       }
     }
