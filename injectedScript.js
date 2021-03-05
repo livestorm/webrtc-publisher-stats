@@ -1,16 +1,16 @@
 const inject =
   "(" +
   function () {
+    window._webrtc_getstats = {
+      peerConnections: [],
+      senderStats: {},
+      receiverStats: {},
+    };
+
     // Pushes every newly created RTCPeerConnection to an array.
     class customRTCPeerConnection extends RTCPeerConnection {
       constructor(configuration) {
         console.log("New PeerConnection !");
-
-        if (!window._webrtc_getstats?.peerConnections) {
-          window._webrtc_getstats = {
-            peerConnections: [],
-          };
-        }
 
         super(configuration);
 

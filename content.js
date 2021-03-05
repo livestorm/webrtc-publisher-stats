@@ -1,10 +1,5 @@
 const _dom_prefix = "webrtc-getstats-extension";
 const interval = 5; // in seconds
-const senderStats = {};
-const receiverStats = {};
-
-window._webrtc_getstats.senderStats = senderStats;
-window._webrtc_getstats.receiverStats = receiverStats;
 
 const findDOMElementForTrack = (track) => {
   let foundElement = null;
