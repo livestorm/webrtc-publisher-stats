@@ -26,7 +26,7 @@ const findDOMElementForTrack = (track) => {
 
     if (foundVideoTrack) {
       console.log(
-        `Found <${element.tagName} /> DOM element for audio track : `,
+        `Found <${element.tagName} /> DOM element for video track : `,
         element
       );
       foundElement = element;
