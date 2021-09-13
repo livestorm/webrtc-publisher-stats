@@ -43,7 +43,7 @@ const loopGetStats = () => {
   }
 
   window._webrtc_getstats.peerConnections.forEach(async (pc) => {
-    if (pc.iceConnectionState !== "completed") {
+    if (pc.iceConnectionState !== "completed" && pc.iceConnectionState !== "connected") {
       return;
     }
 
