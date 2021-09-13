@@ -128,7 +128,7 @@ const loopGetStats = () => {
         );
       } catch (error) {
         console.log(
-          "[webrtc_getstats_extension] Failed to get stats for transporter"
+          "[webrtc_getstats_extension] Failed to get stats for transporter :", error
         );
       }
     }
