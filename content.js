@@ -38,8 +38,6 @@ const findDOMElementForTrack = (track) => {
 };
 
 const loopGetStats = () => {
-  console.log("I would like to get stats from those RTCPeerConnections...");
-
   if (!window._webrtc_getstats?.peerConnections) {
     return;
   }
