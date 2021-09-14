@@ -47,16 +47,13 @@ const loopGetStats = () => {
       return
     }
 
-    /**
-     * 'transporter' contains either a RTCRtpReceiver or a RTCRtpSender
-     */
-    for (const transporter of [...pc.getSenders()]) {
-      if (!transporter?.track) {
+    for (const rtcRtpSender of [...pc.getSenders()]) {
+      if (!rtcRtpSender?.track) {
         // No RTCRtpReceiver/RTCRtpSender or MediaTrack, return
         continue
       }
 
-      const element = findDOMElementForTrack(transporter.track)
+      const element = findDOMElementForTrack(rtcRtpSender.track)
       if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
         continue
@@ -75,16 +72,16 @@ const loopGetStats = () => {
         element.parentNode.appendChild(container)
       }
 
-      if (!window._webrtc_getstats.transporterStats[element.srcObject.id]) {
+      if (!window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id]) {
         /**
-         * Create stats object for transporter :
+         * Create stats object for rtcRtpSender :
          * - type : RTCRtpReceiver or RTCRtpSender
          * - identify it with the corresponding MediaStream id in the DOM
          * - store the MediaStream track
          * - gather stats
          */
-        window._webrtc_getstats.transporterStats[element.srcObject.id] = {
-          type: transporter.constructor.name,
+        window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id] = {
+          type: rtcRtpSender.constructor.name,
           stats: {
             rtt: 0,
             bytesSent: 0,
@@ -100,12 +97,12 @@ const loopGetStats = () => {
 
       try {
         const trackStats =
-          window._webrtc_getstats.transporterStats[element.srcObject.id].stats
+          window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id].stats
 
         console.log(
-          `[${transporter.track.kind}][${transporter.constructor.name}] stats ------`
+          `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] stats ------`
         )
-        const stats = await transporter.getStats()
+        const stats = await rtcRtpSender.getStats()
 
         stats.forEach((stat) => {
           switch (stat.type) {
@@ -170,10 +167,10 @@ const loopGetStats = () => {
             }
             case "candidate-pair": {
               console.log(
-                `[${transporter.track.kind}][${transporter.constructor.name}][${stat.type}] :`,
+                `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}][${stat.type}] :`,
                 stat
               )
-              if (stat.nominated && transporter.track.kind === 'audio') {
+              if (stat.nominated && rtcRtpSender.track.kind === 'audio') {
                 // The values found in the 'candidate-pair' report are the
                 // same in both 'audio' and 'video' tracks. If we want to
                 // compute the bitrate, we must extract and store the
@@ -194,12 +191,12 @@ const loopGetStats = () => {
         })
 
         console.log(
-          `[${transporter.track.kind}][${transporter.constructor.name}] element :`,
+          `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] element :`,
           element
         )
       } catch (error) {
         console.log(
-          "[webrtc_getstats_extension] Failed to get stats for transporter :", error
+          "[webrtc_getstats_extension] Failed to get stats for rtcRtpSender :", error
         )
       }
     }

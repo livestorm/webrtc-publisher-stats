@@ -3,7 +3,7 @@ const inject =
   function () {
     window._webrtc_getstats = {
       peerConnections: [],
-      transporterStats: {},
+      rtcRtpSenderStats: {},
     };
 
     // Pushes every newly created RTCPeerConnection to an array.
