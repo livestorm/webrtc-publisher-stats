@@ -1,50 +1,50 @@
-const _dom_prefix = "webrtc-getstats-extension";
-const interval = 5; // in seconds
+const _dom_prefix = "webrtc-getstats-extension"
+const interval = 5 // in seconds
 
 const findDOMElementForTrack = (track) => {
-  let foundElement = null;
+  let foundElement = null
 
   document.querySelectorAll("audio, video").forEach((element) => {
     if (!element?.srcObject) {
-      return;
+      return
     }
 
-    const audioTracksFromDOM = element.srcObject.getAudioTracks();
-    const videoTracksFromDOM = element.srcObject.getVideoTracks();
+    const audioTracksFromDOM = element.srcObject.getAudioTracks()
+    const videoTracksFromDOM = element.srcObject.getVideoTracks()
 
-    const foundAudioTrack = audioTracksFromDOM.find((e) => e === track);
-    const foundVideoTrack = videoTracksFromDOM.find((e) => e === track);
+    const foundAudioTrack = audioTracksFromDOM.find((e) => e === track)
+    const foundVideoTrack = videoTracksFromDOM.find((e) => e === track)
 
     if (foundAudioTrack) {
       console.log(
         `Found <${element.tagName} /> DOM element for audio track : `,
         element
-      );
-      foundElement = element;
-      return;
+      )
+      foundElement = element
+      return
     }
 
     if (foundVideoTrack) {
       console.log(
         `Found <${element.tagName} /> DOM element for video track : `,
         element
-      );
-      foundElement = element;
-      return;
+      )
+      foundElement = element
+      return
     }
-  });
+  })
 
-  return foundElement;
-};
+  return foundElement
+}
 
 const loopGetStats = () => {
   if (!window._webrtc_getstats?.peerConnections) {
-    return;
+    return
   }
 
   window._webrtc_getstats.peerConnections.forEach(async (pc) => {
     if (pc.iceConnectionState !== "completed" && pc.iceConnectionState !== "connected") {
-      return;
+      return
     }
 
     /**
@@ -53,26 +53,26 @@ const loopGetStats = () => {
     for (const transporter of [...pc.getSenders()]) {
       if (!transporter?.track) {
         // No RTCRtpReceiver/RTCRtpSender or MediaTrack, return
-        continue;
+        continue
       }
 
-      const element = findDOMElementForTrack(transporter.track);
+      const element = findDOMElementForTrack(transporter.track)
       if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
-        continue;
+        continue
       }
 
       let container = document.querySelector(
         "#" + _dom_prefix + "_" + element.srcObject.id
-      );
+      )
 
       if (!container) {
         // DOM container not found, create it and insert above its <video />
         // element.
-        const container = document.createElement("div");
-        container.id = _dom_prefix + "_" + element.srcObject.id;
-        container.className = _dom_prefix + "-container";
-        element.parentNode.appendChild(container);
+        const container = document.createElement("div")
+        container.id = _dom_prefix + "_" + element.srcObject.id
+        container.className = _dom_prefix + "-container"
+        element.parentNode.appendChild(container)
       }
 
       if (!window._webrtc_getstats.transporterStats[element.srcObject.id]) {
@@ -100,12 +100,12 @@ const loopGetStats = () => {
 
       try {
         const trackStats =
-          window._webrtc_getstats.transporterStats[element.srcObject.id].stats;
+          window._webrtc_getstats.transporterStats[element.srcObject.id].stats
 
         console.log(
           `[${transporter.track.kind}][${transporter.constructor.name}] stats ------`
-        );
-        const stats = await transporter.getStats();
+        )
+        const stats = await transporter.getStats()
 
         stats.forEach((stat) => {
           switch (stat.type) {
@@ -166,13 +166,13 @@ const loopGetStats = () => {
                 trackStats.audio.bytesSent = outboundRTPReport.bytesSent
               }
 
-              break;
+              break
             }
             case "candidate-pair": {
               console.log(
                 `[${transporter.track.kind}][${transporter.constructor.name}][${stat.type}] :`,
                 stat
-              );
+              )
               if (stat.nominated && transporter.track.kind === 'audio') {
                 // The values found in the 'candidate-pair' report are the
                 // same in both 'audio' and 'video' tracks. If we want to
@@ -186,26 +186,26 @@ const loopGetStats = () => {
                 trackStats.bytesSent = stat.bytesSent
                 trackStats.availableOutgoingBitrate = stat.availableOutgoingBitrate
               }
-              break;
+              break
             }
             default:
-              break;
+              break
           }
-        });
+        })
 
         console.log(
           `[${transporter.track.kind}][${transporter.constructor.name}] element :`,
           element
-        );
+        )
       } catch (error) {
         console.log(
           "[webrtc_getstats_extension] Failed to get stats for transporter :", error
-        );
+        )
       }
     }
-  });
+  })
 
-  setTimeout(loopGetStats, interval * 1000);
-};
+  setTimeout(loopGetStats, interval * 1000)
+}
 
-setTimeout(loopGetStats, interval * 1000);
+setTimeout(loopGetStats, interval * 1000)
