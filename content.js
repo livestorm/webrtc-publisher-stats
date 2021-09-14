@@ -37,14 +37,14 @@ const findDOMElementForTrack = (track) => {
   return foundElement
 }
 
-const loopGetStats = () => {
+const loopGetStats = async () => {
   if (!window._webrtc_getstats?.peerConnections) {
     return
   }
 
-  window._webrtc_getstats.peerConnections.forEach(async (pc) => {
+  for (const pc of window._webrtc_getstats.peerConnections) {
     if (pc.iceConnectionState !== "completed" && pc.iceConnectionState !== "connected") {
-      return
+      continue
     }
 
     for (const rtcRtpSender of [...pc.getSenders()]) {
@@ -199,7 +199,7 @@ const loopGetStats = () => {
         )
       }
     }
-  })
+  }
 
   setTimeout(loopGetStats, interval * 1000)
 }
