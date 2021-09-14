@@ -1,0 +1,26 @@
+{
+  "name": "webrtc-publisher-stats",
+  "version": "1.0.0",
+  "description": "Real time quality information of your published WebRTC streams",
+  "main": "content.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/phsultan/webrtc_publisher_stats.git"
+  },
+  "keywords": [
+    "WebRTC",
+    "stats"
+  ],
+  "author": "Philippe Sultan",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/phsultan/webrtc_publisher_stats/issues"
+  },
+  "homepage": "https://github.com/phsultan/webrtc_publisher_stats#readme",
+  "devDependencies": {
+    "eslint": "^7.32.0"
+  }
+}
