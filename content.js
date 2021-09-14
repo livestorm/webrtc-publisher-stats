@@ -53,13 +53,13 @@ const loopGetStats = () => {
     for (const transporter of [...pc.getSenders()]) {
       if (!transporter?.track) {
         // No RTCRtpReceiver/RTCRtpSender or MediaTrack, return
-        break;
+        continue;
       }
 
       const element = findDOMElementForTrack(transporter.track);
       if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
-        break;
+        continue;
       }
 
       let container = document.querySelector(
