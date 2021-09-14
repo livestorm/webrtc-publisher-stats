@@ -49,7 +49,6 @@ const loopGetStats = () => {
 
     for (const rtcRtpSender of [...pc.getSenders()]) {
       if (!rtcRtpSender?.track) {
-        // No RTCRtpReceiver/RTCRtpSender or MediaTrack, return
         continue
       }
 
