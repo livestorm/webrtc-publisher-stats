@@ -1,6 +1,14 @@
 .webrtc-getstats-extension-container {
-	position: fixed;
-	color: lightgreen;
-	top: 0;
-	left: 0;
+  border: 1px solid black;
+  position: fixed;
+  width: 200px;
+  height: 400px;
+  top: 0;
+  right: 0;
+  z-index: 10000;
+  background-color: wheat;
+}
+
+.stream-class {
+  margin-top: 5px
 }
