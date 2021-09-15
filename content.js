@@ -16,19 +16,19 @@ const findDOMElementForTrack = (track) => {
     const foundVideoTrack = videoTracksFromDOM.find((e) => e === track)
 
     if (foundAudioTrack) {
-      console.log(
-        `Found <${element.tagName} /> DOM element for audio track : `,
-        element
-      )
+//       console.log(
+//         `Found <${element.tagName} /> DOM element for audio track : `,
+//         element, track
+//       )
       foundElement = element
       return
     }
 
     if (foundVideoTrack) {
-      console.log(
-        `Found <${element.tagName} /> DOM element for video track : `,
-        element
-      )
+//       console.log(
+//         `Found <${element.tagName} /> DOM element for video track : `,
+//         element, track
+//       )
       foundElement = element
       return
     }
@@ -58,18 +58,18 @@ const loopGetStats = async () => {
         continue
       }
 
-      let container = document.querySelector(
-        "#" + _dom_prefix + "_" + element.srcObject.id
-      )
-
-      if (!container) {
-        // DOM container not found, create it and insert above its <video />
-        // element.
-        const container = document.createElement("div")
-        container.id = _dom_prefix + "_" + element.srcObject.id
-        container.className = _dom_prefix + "-container"
-        element.parentNode.appendChild(container)
-      }
+//       let container = document.querySelector(
+//         "#" + _dom_prefix + "_" + element.srcObject.id
+//       )
+// 
+//       if (!container) {
+//         // DOM container not found, create it and insert above its <video />
+//         // element.
+//         const container = document.createElement("div")
+//         container.id = _dom_prefix + "_" + element.srcObject.id
+//         container.className = _dom_prefix + "-container"
+//         element.parentNode.appendChild(container)
+//       }
 
       if (!window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id]) {
         /**
@@ -108,11 +108,6 @@ const loopGetStats = async () => {
             case "remote-inbound-rtp": {
               const outboundRTPReport = stats.get(stat.localId)
               if (stat.kind === 'video' && outboundRTPReport?.frameHeight) {
-                console.log('outboundRTPReport :', outboundRTPReport)
-                console.log('trackStats.video :', trackStats.video)
-                console.log('outboundRTPReport.frameHeight :', outboundRTPReport.frameHeight)
-                console.log('outboundRTPReport.frameWidth :', outboundRTPReport.frameWidth)
-
                 const reportVideoIndex = `${outboundRTPReport.frameWidth}x${outboundRTPReport.frameHeight}`
 
                 if (!trackStats.video[reportVideoIndex]) {
@@ -189,10 +184,10 @@ const loopGetStats = async () => {
           }
         })
 
-        console.log(
-          `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] element :`,
-          element
-        )
+//         console.log(
+//           `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] element :`,
+//           element
+//         )
       } catch (error) {
         console.log(
           "[webrtc_getstats_extension] Failed to get stats for rtcRtpSender :", error
