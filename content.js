@@ -90,7 +90,7 @@ const updateHTML = (stats) => {
       audioBitrateElem.appendChild(document.createTextNode(`audio bitrate : ${audioBitrateKbits} kbps`))
       const audioJitterElement = document.createElement('div')
       audioJitterElement.classList.add('jitter')
-      audioJitterElement.appendChild(document.createTextNode(`video jitter : ${audioJitter}`))
+      audioJitterElement.appendChild(document.createTextNode(`audio jitter : ${audioJitter}`))
 
       audioWrapper.appendChild(audioRoundTripTimeElement)
       audioWrapper.appendChild(audioBitrateElem)
