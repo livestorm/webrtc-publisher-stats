@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/phsultan/webrtc_publisher_stats.git"
+    "url": "git+https://github.com/livestorm/webrtc-publisher-stats.git"
   },
   "standard": {
     "globals": [ "chrome", "RTCPeerConnection" ]
@@ -20,9 +20,9 @@
   "author": "Philippe Sultan",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/phsultan/webrtc_publisher_stats/issues"
+    "url": "https://github.com/livestorm/webrtc-publisher-stats.git/issues"
   },
-  "homepage": "https://github.com/phsultan/webrtc_publisher_stats#readme",
+  "homepage": "https://github.com/livestorm/webrtc-publisher-stats.git#readme",
   "devDependencies": {
     "standard": "^16.0.3"
   }
