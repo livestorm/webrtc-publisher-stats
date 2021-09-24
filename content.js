@@ -50,20 +50,8 @@ const updateHTML = (stats) => {
   Object.keys(stats).forEach(key => {
     let domElement = document.querySelector(`#${_dom_prefix} .mediastreamid-${key}`)
 
-    const bitrate = stats[key].stats.bitrate
-    const availableOutgoingBitrate = stats[key].stats.availableOutgoingBitrate
     const audioBitrate = stats[key].stats.audio.bitrate
-    let bitrateKbits = 0
-    let availableOutgoingBitrateKbits = 0
     let audioBitrateKbits = 0
-
-    if (!isNaN(bitrate)) {
-      bitrateKbits = Math.round(bitrate/1000)
-    }
-
-    if (!isNaN(availableOutgoingBitrate)) {
-      availableOutgoingBitrateKbits = Math.round(availableOutgoingBitrate/1000)
-    }
 
     if (!isNaN(audioBitrate)) {
       audioBitrateKbits = Math.round(audioBitrate/1000)
@@ -74,58 +62,54 @@ const updateHTML = (stats) => {
       wrapper.classList.add(`stream-class`)
       wrapper.classList.add(`mediastreamid-${key}`)
 
-      const rtt = document.createElement('div')
-      rtt.classList.add('rtt')
-      rtt.appendChild(document.createTextNode(`RTT : ${stats[key].stats.rtt}s`))
-
-      const bitrate = document.createElement('div')
-      bitrate.classList.add('bitrate')
-      bitrate.appendChild(document.createTextNode(`bitrate : ${bitrateKbits} kbps`))
-
-      const availableOutgoingBitrate = document.createElement('div')
-      availableOutgoingBitrate.classList.add('availableOutgoingBitrate')
-      availableOutgoingBitrate.appendChild(document.createTextNode(`available bitrate : ${availableOutgoingBitrateKbits} kbps`))
-
       const audioInstantPacketLossPercent = stats[key].stats.audio.instantPacketLossPercent
       const audioWrapper = document.createElement('div')
       audioWrapper.classList.add('audio')
 
+      const audioRoundTripTimeElement = document.createElement('div')
+      audioRoundTripTimeElement.classList.add('rtt')
+      audioRoundTripTimeElement.appendChild(document.createTextNode(`audio RTT : ${stats[key].stats.audio.roundTripTime}s`))
       const audioInstantPacketLossPercentElem = document.createElement('div')
       audioInstantPacketLossPercentElem.classList.add('instant-packet-loss-percent')
       audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`audio loss : ${Math.round(audioInstantPacketLossPercent)}%`))
       const audioBitrateElem = document.createElement('div')
       audioBitrateElem.classList.add('bitrate')
       audioBitrateElem.appendChild(document.createTextNode(`audio bitrate : ${audioBitrateKbits} kbps`))
+      const audioJitterElement = document.createElement('div')
+      audioJitterElement.classList.add('jitter')
+      audioJitterElement.appendChild(document.createTextNode(`video jitter : ${stats[key].stats.audio.jitter.toFixed(3)}`))
 
+      audioWrapper.appendChild(audioRoundTripTimeElement)
       audioWrapper.appendChild(audioBitrateElem)
       audioWrapper.appendChild(audioInstantPacketLossPercentElem)
+      audioWrapper.appendChild(audioJitterElement)
 
       const videoWrapper = document.createElement('div')
       videoWrapper.classList.add('video')
       Object.entries(stats[key].stats.video).forEach(([key, value]) => {
+        if (!value.bitrate || isNaN(value.bitrate) || value.bitrate <= 0) {
+          return
+        }
+
         const videoStatElement = document.createElement('div')
         videoStatElement.classList.add(`dimensions-${key}`)
 
         const videoStatTitleElement = document.createElement('div')
         videoStatTitleElement.classList.add(`title`)
-        videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`)) 
+        videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`))
 
         const videoRoundTripTimeElement = document.createElement('div')
         videoRoundTripTimeElement.classList.add('rtt')
-        videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${value.roundTripTime}s`)) 
+        videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${value.roundTripTime}s`))
         const videoLossElement = document.createElement('div')
         videoLossElement.classList.add('instant-packet-loss-percent')
-        videoLossElement.appendChild(document.createTextNode(`video loss : ${Math.round(value.instantPacketLossPercent)}%`)) 
+        videoLossElement.appendChild(document.createTextNode(`video loss : ${Math.round(value.instantPacketLossPercent)}%`))
         const videoJitterElement = document.createElement('div')
         videoJitterElement.classList.add('jitter')
         videoJitterElement.appendChild(document.createTextNode(`video jitter : ${value.jitter.toFixed(3)}`)) 
-        let videoBitrateKbits = 0
-        if (!isNaN(value.bitrate)) {
-          videoBitrateKbits = Math.round(value.bitrate/1000)
-        }
         const videoBitrateElement = document.createElement('div')
         videoBitrateElement.classList.add('bitrate')
-        videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${videoBitrateKbits} kbps`)) 
+        videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${Math.round(value.bitrate/1000)} kbps`))
 
         videoStatElement.appendChild(videoStatTitleElement)
         videoStatElement.appendChild(videoRoundTripTimeElement)
@@ -135,23 +119,18 @@ const updateHTML = (stats) => {
         videoWrapper.appendChild(videoStatElement)
       })
 
-      wrapper.appendChild(rtt)
-      wrapper.appendChild(availableOutgoingBitrate)
-      wrapper.appendChild(bitrate)
       wrapper.appendChild(audioWrapper)
       wrapper.appendChild(videoWrapper)
       container.appendChild(wrapper)
       return
     }
 
-    domElement.querySelector('.rtt').innerText = `RTT : ${stats[key].stats.rtt}s`
-    domElement.querySelector('.availableOutgoingBitrate').innerText = `available bitrate : ${availableOutgoingBitrateKbits} kbps`
-    domElement.querySelector('.bitrate').innerText = `bitrate : ${bitrateKbits} kbps`
+    domElement.querySelector('.audio .rtt').innerText = `audio RTT : ${stats[key].stats.audio.roundTripTime}s`
     domElement.querySelector('.audio .bitrate').innerText = `audio bitrate : ${stats[key].stats.audio.bitrate ? Math.round(stats[key].stats.audio.bitrate/1000) : 0} kbps`
     domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `audio loss : ${Math.round(stats[key].stats.audio.instantPacketLossPercent)}%`
     Object.entries(stats[key].stats.video).forEach(([key, value]) => {
       let videoStatElement = domElement.querySelector(`.video .dimensions-${key}`)
-      if (!videoStatElement) {
+      if (!videoStatElement && !isNaN(value.bitrate) && value.bitrate > 0) {
         // Published video switched to another dimension set, need to update
         // and create a new DOM element
         videoStatElement = document.createElement('div')
@@ -159,24 +138,22 @@ const updateHTML = (stats) => {
 
         const videoStatTitleElement = document.createElement('div')
         videoStatTitleElement.classList.add(`title`)
-        videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`)) 
+        videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`))
 
         const videoRoundTripTimeElement = document.createElement('div')
         videoRoundTripTimeElement.classList.add('rtt')
-        videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${value.roundTripTime}s`)) 
+        videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${value.roundTripTime}s`))
         const videoLossElement = document.createElement('div')
         videoLossElement.classList.add('instant-packet-loss-percent')
-        videoLossElement.appendChild(document.createTextNode(`video loss : ${Math.round(value.instantPacketLossPercent)}%`)) 
+        videoLossElement.appendChild(document.createTextNode(`video loss : ${Math.round(value.instantPacketLossPercent)}%`))
         const videoJitterElement = document.createElement('div')
         videoJitterElement.classList.add('jitter')
-        videoJitterElement.appendChild(document.createTextNode(`video jitter : ${value.jitter.toFixed(3)}`)) 
+        videoJitterElement.appendChild(document.createTextNode(`video jitter : ${value.jitter.toFixed(3)}`))
         let videoBitrateKbits = 0
-        if (!isNaN(value.bitrate)) {
-          videoBitrateKbits = Math.round(value.bitrate/1000)
-        }
+        videoBitrateKbits = Math.round(value.bitrate/1000)
         const videoBitrateElement = document.createElement('div')
         videoBitrateElement.classList.add('bitrate')
-        videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${videoBitrateKbits} kbps`)) 
+        videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${videoBitrateKbits} kbps`))
 
         videoStatElement.appendChild(videoStatTitleElement)
         videoStatElement.appendChild(videoRoundTripTimeElement)
@@ -184,11 +161,16 @@ const updateHTML = (stats) => {
         videoStatElement.appendChild(videoLossElement)
         videoStatElement.appendChild(videoJitterElement)
         domElement.querySelector('.video').appendChild(videoStatElement)
-      } else {
-        domElement.querySelector(`.video .dimensions-${key} .rtt`).innerText = `RTT : ${value.roundTripTime}s`
-        domElement.querySelector(`.video .dimensions-${key} .instant-packet-loss-percent`).innerText = `video loss : ${Math.round(value.instantPacketLossPercent)}%`
-        domElement.querySelector(`.video .dimensions-${key} .jitter`).innerText = `video jitter : ${value.jitter.toFixed(3)}`
-        domElement.querySelector(`.video .dimensions-${key} .bitrate`).innerText = `video bitrate : ${value.bitrate ? Math.round(value.bitrate/1000) : 0} kbps`
+      } else if (videoStatElement) {
+        if (!value.bitrate || value.bitrate <=0 || isNaN(value.bitrate)) {
+          // bitrate set to 0, remove video track stats from the DOM
+          videoStatElement.remove()
+        } else {
+          domElement.querySelector(`.video .dimensions-${key} .rtt`).innerText = `RTT : ${value.roundTripTime}s`
+          domElement.querySelector(`.video .dimensions-${key} .instant-packet-loss-percent`).innerText = `video loss : ${Math.round(value.instantPacketLossPercent)}%`
+          domElement.querySelector(`.video .dimensions-${key} .jitter`).innerText = `video jitter : ${value.jitter.toFixed(3)}`
+          domElement.querySelector(`.video .dimensions-${key} .bitrate`).innerText = `video bitrate : ${value.bitrate ? Math.round(value.bitrate/1000) : 0} kbps`
+        }
       }
     })
   })
@@ -224,6 +206,9 @@ const loopGetStats = async () => {
       continue
     }
 
+    // Clone object of the stats before we call getStats on our targets
+    let rtcRtpSenderStatsClone = null
+
     for (const rtcRtpSender of [...pc.getSenders()]) {
       if (!rtcRtpSender?.track) {
         continue
@@ -248,9 +233,12 @@ const loopGetStats = async () => {
 //         element.parentNode.appendChild(container)
 //       }
 
-      if (!window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id]) {
+
+      const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id]
+
+      if (!rtcRtpSenderStats) {
         /**
-         * Create stats object for rtcRtpSender :
+         * Create stats object
          * - type : RTCRtpReceiver or RTCRtpSender
          * - identify it with the corresponding MediaStream id in the DOM
          * - store the MediaStream track
@@ -269,15 +257,14 @@ const loopGetStats = async () => {
             },
           }
         }
+      } else if (!rtcRtpSenderStatsClone) {
+        rtcRtpSenderStatsClone = JSON.parse(JSON.stringify(rtcRtpSenderStats))
       }
 
       try {
         const trackStats =
           window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id].stats
 
-        console.log(
-          `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] stats ------`
-        )
         const stats = await rtcRtpSender.getStats()
 
         stats.forEach((stat) => {
@@ -295,12 +282,15 @@ const loopGetStats = async () => {
                     packetsLost: 0,
                     instantPacketLossPercent: 0,
                     fractionLost: 0,
+                    roundTripTime: 0,
                     jitter: 0,
                     bytesSent: 0,
                     bitrate: 0,
                   }
                 }
 
+                console.log('remote-inbound-rtp :', stat)
+                console.log('outboundRTPReport :', outboundRTPReport)
                 const diffFramesSent = outboundRTPReport.framesSent-trackStats.video[reportVideoIndex].framesSent
                 trackStats.video[reportVideoIndex].frameRate=diffFramesSent/interval
                 trackStats.video[reportVideoIndex].framesSent = outboundRTPReport.framesSent
@@ -315,9 +305,6 @@ const loopGetStats = async () => {
 
                 trackStats.video[reportVideoIndex].jitter = stat.jitter
                 trackStats.video[reportVideoIndex].roundTripTime = stat.roundTripTime
-
-                const diffBytesSent = outboundRTPReport.bytesSent-trackStats.video[reportVideoIndex].bytesSent
-                trackStats.video[reportVideoIndex].bitrate = diffBytesSent*8/interval
                 trackStats.video[reportVideoIndex].bytesSent = outboundRTPReport.bytesSent
               } else if (stat.kind === 'audio') {
                 const diffPacketsSent = outboundRTPReport.packetsSent-trackStats.audio.packetsSent
@@ -329,31 +316,9 @@ const loopGetStats = async () => {
 
                 trackStats.audio.jitter = stat.jitter
                 trackStats.audio.roundTripTime = stat.roundTripTime
-                const diffBytesSent = outboundRTPReport.bytesSent-trackStats.audio.bytesSent
-                trackStats.audio.bitrate = diffBytesSent*8/interval
                 trackStats.audio.bytesSent = outboundRTPReport.bytesSent
               }
 
-              break
-            }
-            case "candidate-pair": {
-              console.log(
-                `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}][${stat.type}] :`,
-                stat
-              )
-              if (stat.nominated && rtcRtpSender.track.kind === 'audio') {
-                // The values found in the 'candidate-pair' report are the
-                // same in both 'audio' and 'video' tracks. If we want to
-                // compute the bitrate, we must extract and store the
-                // 'bytesSent' out of one of the two kinds
-                console.log('stat.bytesSent :', stat.bytesSent)
-                console.log('trackStats.bytesSent :', trackStats.bytesSent)
-                trackStats.rtt = stat.currentRoundTripTime
-                const diffBytesSent = stat.bytesSent-trackStats.bytesSent
-                trackStats.bitrate = diffBytesSent*8/interval
-                trackStats.bytesSent = stat.bytesSent
-                trackStats.availableOutgoingBitrate = stat.availableOutgoingBitrate
-              }
               break
             }
             default:
@@ -369,6 +334,21 @@ const loopGetStats = async () => {
         console.log(
           "[webrtc_getstats_extension] Failed to get stats for rtcRtpSender :", error
         )
+      }
+
+      if (rtcRtpSenderStats && rtcRtpSenderStatsClone) {
+        // Perform computations that need differences
+        Object.entries(rtcRtpSenderStats.stats.video).forEach(([key, value]) => {
+          if (!rtcRtpSenderStatsClone.stats.video[key]) {
+            // No data to compare with
+            return
+          }
+          const diffBytesSent = value.bytesSent-rtcRtpSenderStatsClone.stats.video[key].bytesSent
+          value.bitrate = diffBytesSent*8/interval
+        })
+
+        rtcRtpSenderStats.stats.audio.bitrate = (rtcRtpSenderStats.stats.audio.bytesSent-rtcRtpSenderStatsClone.stats.audio.bytesSent)*8/interval
+        rtcRtpSenderStats.stats.bitrate = (rtcRtpSenderStats.stats.bytesSent-rtcRtpSenderStatsClone.stats.bytesSent)*8/interval
       }
     }
   }
