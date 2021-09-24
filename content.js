@@ -51,9 +51,24 @@ const updateHTML = (stats) => {
 
     const audioBitrate = stats[key].stats.audio.bitrate
     let audioBitrateKbits = 0
+    let audioRoundTripTime = 0
+    let audioJitter = 0
+    let audioInstantPacketLossPercent = 0
 
     if (!isNaN(audioBitrate)) {
       audioBitrateKbits = Math.round(audioBitrate / 1000)
+    }
+
+    if (stats[key].stats.audio.roundTripTime && !isNaN(stats[key].stats.audio.roundTripTime)) {
+      audioRoundTripTime = stats[key].stats.audio.roundTripTime
+    }
+
+    if (stats[key].stats.audio.jitter && !isNaN(stats[key].stats.audio.jitter)) {
+      audioJitter = stats[key].stats.audio.jitter.toFixed(3)
+    }
+
+    if (stats[key].stats.audio.instantPacketLossPercent && !isNaN(stats[key].stats.audio.instantPacketLossPercent)) {
+      audioInstantPacketLossPercent = Math.round(stats[key].stats.audio.instantPacketLossPercent)
     }
 
     if (!domElement) {
@@ -61,22 +76,21 @@ const updateHTML = (stats) => {
       wrapper.classList.add('stream-class')
       wrapper.classList.add(`mediastreamid-${key}`)
 
-      const audioInstantPacketLossPercent = stats[key].stats.audio.instantPacketLossPercent
       const audioWrapper = document.createElement('div')
       audioWrapper.classList.add('audio')
 
       const audioRoundTripTimeElement = document.createElement('div')
       audioRoundTripTimeElement.classList.add('rtt')
-      audioRoundTripTimeElement.appendChild(document.createTextNode(`audio RTT : ${stats[key].stats.audio.roundTripTime}s`))
+      audioRoundTripTimeElement.appendChild(document.createTextNode(`audio RTT : ${audioRoundTripTime}s`))
       const audioInstantPacketLossPercentElem = document.createElement('div')
       audioInstantPacketLossPercentElem.classList.add('instant-packet-loss-percent')
-      audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`audio loss : ${Math.round(audioInstantPacketLossPercent)}%`))
+      audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`audio loss : ${audioInstantPacketLossPercent}%`))
       const audioBitrateElem = document.createElement('div')
       audioBitrateElem.classList.add('bitrate')
       audioBitrateElem.appendChild(document.createTextNode(`audio bitrate : ${audioBitrateKbits} kbps`))
       const audioJitterElement = document.createElement('div')
       audioJitterElement.classList.add('jitter')
-      audioJitterElement.appendChild(document.createTextNode(`video jitter : ${stats[key].stats.audio.jitter.toFixed(3)}`))
+      audioJitterElement.appendChild(document.createTextNode(`video jitter : ${audioJitter}`))
 
       audioWrapper.appendChild(audioRoundTripTimeElement)
       audioWrapper.appendChild(audioBitrateElem)
