@@ -1,10 +1,10 @@
-const _dom_prefix = "webrtc-getstats-extension"
+const domPrefix = 'webrtc-getstats-extension'
 const interval = 5 // in seconds
 
 const findDOMElementForTrack = (track) => {
   let foundElement = null
 
-  document.querySelectorAll("audio, video").forEach((element) => {
+  document.querySelectorAll('audio, video').forEach((element) => {
     if (!element?.srcObject) {
       return
     }
@@ -16,21 +16,20 @@ const findDOMElementForTrack = (track) => {
     const foundVideoTrack = videoTracksFromDOM.find((e) => e === track)
 
     if (foundAudioTrack) {
-//       console.log(
-//         `Found <${element.tagName} /> DOM element for audio track : `,
-//         element, track
-//       )
+      //       console.log(
+      //         `Found <${element.tagName} /> DOM element for audio track : `,
+      //         element, track
+      //       )
       foundElement = element
       return
     }
 
     if (foundVideoTrack) {
-//       console.log(
-//         `Found <${element.tagName} /> DOM element for video track : `,
-//         element, track
-//       )
+      //       console.log(
+      //         `Found <${element.tagName} /> DOM element for video track : `,
+      //         element, track
+      //       )
       foundElement = element
-      return
     }
   })
 
@@ -38,28 +37,28 @@ const findDOMElementForTrack = (track) => {
 }
 
 const updateHTML = (stats) => {
-  let container = document.querySelector("#" + _dom_prefix)
+  let container = document.querySelector('#' + domPrefix)
 
   if (!container) {
-    container = document.createElement("div")
-    container.id = _dom_prefix
-    container.className = _dom_prefix + "-container"
+    container = document.createElement('div')
+    container.id = domPrefix
+    container.className = domPrefix + '-container'
     document.body.appendChild(container)
   }
 
   Object.keys(stats).forEach(key => {
-    let domElement = document.querySelector(`#${_dom_prefix} .mediastreamid-${key}`)
+    const domElement = document.querySelector(`#${domPrefix} .mediastreamid-${key}`)
 
     const audioBitrate = stats[key].stats.audio.bitrate
     let audioBitrateKbits = 0
 
     if (!isNaN(audioBitrate)) {
-      audioBitrateKbits = Math.round(audioBitrate/1000)
+      audioBitrateKbits = Math.round(audioBitrate / 1000)
     }
 
     if (!domElement) {
-      const wrapper = document.createElement('div') 
-      wrapper.classList.add(`stream-class`)
+      const wrapper = document.createElement('div')
+      wrapper.classList.add('stream-class')
       wrapper.classList.add(`mediastreamid-${key}`)
 
       const audioInstantPacketLossPercent = stats[key].stats.audio.instantPacketLossPercent
@@ -95,7 +94,7 @@ const updateHTML = (stats) => {
         videoStatElement.classList.add(`dimensions-${key}`)
 
         const videoStatTitleElement = document.createElement('div')
-        videoStatTitleElement.classList.add(`title`)
+        videoStatTitleElement.classList.add('title')
         videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`))
 
         const videoRoundTripTimeElement = document.createElement('div')
@@ -106,10 +105,10 @@ const updateHTML = (stats) => {
         videoLossElement.appendChild(document.createTextNode(`video loss : ${Math.round(value.instantPacketLossPercent)}%`))
         const videoJitterElement = document.createElement('div')
         videoJitterElement.classList.add('jitter')
-        videoJitterElement.appendChild(document.createTextNode(`video jitter : ${value.jitter.toFixed(3)}`)) 
+        videoJitterElement.appendChild(document.createTextNode(`video jitter : ${value.jitter.toFixed(3)}`))
         const videoBitrateElement = document.createElement('div')
         videoBitrateElement.classList.add('bitrate')
-        videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${Math.round(value.bitrate/1000)} kbps`))
+        videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${Math.round(value.bitrate / 1000)} kbps`))
 
         videoStatElement.appendChild(videoStatTitleElement)
         videoStatElement.appendChild(videoRoundTripTimeElement)
@@ -126,7 +125,7 @@ const updateHTML = (stats) => {
     }
 
     domElement.querySelector('.audio .rtt').innerText = `audio RTT : ${stats[key].stats.audio.roundTripTime}s`
-    domElement.querySelector('.audio .bitrate').innerText = `audio bitrate : ${stats[key].stats.audio.bitrate ? Math.round(stats[key].stats.audio.bitrate/1000) : 0} kbps`
+    domElement.querySelector('.audio .bitrate').innerText = `audio bitrate : ${stats[key].stats.audio.bitrate ? Math.round(stats[key].stats.audio.bitrate / 1000) : 0} kbps`
     domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `audio loss : ${Math.round(stats[key].stats.audio.instantPacketLossPercent)}%`
     Object.entries(stats[key].stats.video).forEach(([key, value]) => {
       let videoStatElement = domElement.querySelector(`.video .dimensions-${key}`)
@@ -137,7 +136,7 @@ const updateHTML = (stats) => {
         videoStatElement.classList.add(`dimensions-${key}`)
 
         const videoStatTitleElement = document.createElement('div')
-        videoStatTitleElement.classList.add(`title`)
+        videoStatTitleElement.classList.add('title')
         videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`))
 
         const videoRoundTripTimeElement = document.createElement('div')
@@ -150,7 +149,7 @@ const updateHTML = (stats) => {
         videoJitterElement.classList.add('jitter')
         videoJitterElement.appendChild(document.createTextNode(`video jitter : ${value.jitter.toFixed(3)}`))
         let videoBitrateKbits = 0
-        videoBitrateKbits = Math.round(value.bitrate/1000)
+        videoBitrateKbits = Math.round(value.bitrate / 1000)
         const videoBitrateElement = document.createElement('div')
         videoBitrateElement.classList.add('bitrate')
         videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${videoBitrateKbits} kbps`))
@@ -162,14 +161,14 @@ const updateHTML = (stats) => {
         videoStatElement.appendChild(videoJitterElement)
         domElement.querySelector('.video').appendChild(videoStatElement)
       } else if (videoStatElement) {
-        if (!value.bitrate || value.bitrate <=0 || isNaN(value.bitrate)) {
+        if (!value.bitrate || value.bitrate <= 0 || isNaN(value.bitrate)) {
           // bitrate set to 0, remove video track stats from the DOM
           videoStatElement.remove()
         } else {
           domElement.querySelector(`.video .dimensions-${key} .rtt`).innerText = `RTT : ${value.roundTripTime}s`
           domElement.querySelector(`.video .dimensions-${key} .instant-packet-loss-percent`).innerText = `video loss : ${Math.round(value.instantPacketLossPercent)}%`
           domElement.querySelector(`.video .dimensions-${key} .jitter`).innerText = `video jitter : ${value.jitter.toFixed(3)}`
-          domElement.querySelector(`.video .dimensions-${key} .bitrate`).innerText = `video bitrate : ${value.bitrate ? Math.round(value.bitrate/1000) : 0} kbps`
+          domElement.querySelector(`.video .dimensions-${key} .bitrate`).innerText = `video bitrate : ${value.bitrate ? Math.round(value.bitrate / 1000) : 0} kbps`
         }
       }
     })
@@ -179,7 +178,7 @@ const updateHTML = (stats) => {
 const clearMediaStreamsFromStats = (stats) => {
   Object.keys(stats).forEach(key => {
     let trackExistsInDOM = false
-    document.querySelectorAll("audio, video").forEach((element) => {
+    document.querySelectorAll('audio, video').forEach((element) => {
       if (!element?.srcObject) {
         return
       }
@@ -191,7 +190,7 @@ const clearMediaStreamsFromStats = (stats) => {
 
     if (!trackExistsInDOM) {
       delete stats[key]
-      document.querySelector(`#${_dom_prefix} .mediastreamid-${key}`).remove()
+      document.querySelector(`#${domPrefix} .mediastreamid-${key}`).remove()
     }
   })
 }
@@ -202,7 +201,7 @@ const loopGetStats = async () => {
   }
 
   for (const pc of window._webrtc_getstats.peerConnections) {
-    if (pc.iceConnectionState !== "completed" && pc.iceConnectionState !== "connected") {
+    if (pc.iceConnectionState !== 'completed' && pc.iceConnectionState !== 'connected') {
       continue
     }
 
@@ -220,19 +219,18 @@ const loopGetStats = async () => {
         continue
       }
 
-//       let container = document.querySelector(
-//         "#" + _dom_prefix + "_" + element.srcObject.id
-//       )
-// 
-//       if (!container) {
-//         // DOM container not found, create it and insert above its <video />
-//         // element.
-//         const container = document.createElement("div")
-//         container.id = _dom_prefix + "_" + element.srcObject.id
-//         container.className = _dom_prefix + "-container"
-//         element.parentNode.appendChild(container)
-//       }
-
+      //       let container = document.querySelector(
+      //         "#" + domPrefix + "_" + element.srcObject.id
+      //       )
+      //
+      //       if (!container) {
+      //         // DOM container not found, create it and insert above its <video />
+      //         // element.
+      //         const container = document.createElement("div")
+      //         container.id = domPrefix + "_" + element.srcObject.id
+      //         container.className = domPrefix + "-container"
+      //         element.parentNode.appendChild(container)
+      //       }
 
       const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id]
 
@@ -254,7 +252,7 @@ const loopGetStats = async () => {
             audio: {
             },
             video: {
-            },
+            }
           }
         }
       } else if (!rtcRtpSenderStatsClone) {
@@ -269,7 +267,7 @@ const loopGetStats = async () => {
 
         stats.forEach((stat) => {
           switch (stat.type) {
-            case "remote-inbound-rtp": {
+            case 'remote-inbound-rtp': {
               const outboundRTPReport = stats.get(stat.localId)
               if (stat.kind === 'video' && outboundRTPReport?.frameHeight) {
                 const reportVideoIndex = `${outboundRTPReport.frameWidth}x${outboundRTPReport.frameHeight}`
@@ -285,33 +283,33 @@ const loopGetStats = async () => {
                     roundTripTime: 0,
                     jitter: 0,
                     bytesSent: 0,
-                    bitrate: 0,
+                    bitrate: 0
                   }
                 }
 
                 console.log('remote-inbound-rtp :', stat)
                 console.log('outboundRTPReport :', outboundRTPReport)
-                const diffFramesSent = outboundRTPReport.framesSent-trackStats.video[reportVideoIndex].framesSent
-                trackStats.video[reportVideoIndex].frameRate=diffFramesSent/interval
+                const diffFramesSent = outboundRTPReport.framesSent - trackStats.video[reportVideoIndex].framesSent
+                trackStats.video[reportVideoIndex].frameRate = diffFramesSent / interval
                 trackStats.video[reportVideoIndex].framesSent = outboundRTPReport.framesSent
 
-                const diffPacketsSent = outboundRTPReport.packetsSent-trackStats.video[reportVideoIndex].packetsSent
+                const diffPacketsSent = outboundRTPReport.packetsSent - trackStats.video[reportVideoIndex].packetsSent
                 trackStats.video[reportVideoIndex].packetsSent = outboundRTPReport.packetsSent
-                const diffPacketsLost = stat.packetsLost-trackStats.video[reportVideoIndex].packetsLost
+                const diffPacketsLost = stat.packetsLost - trackStats.video[reportVideoIndex].packetsLost
 
                 trackStats.video[reportVideoIndex].packetsLost = stat.packetsLost
-                trackStats.video[reportVideoIndex].instantPacketLossPercent = 100*diffPacketsLost/diffPacketsSent
+                trackStats.video[reportVideoIndex].instantPacketLossPercent = 100 * diffPacketsLost / diffPacketsSent
                 trackStats.video[reportVideoIndex].fractionLost = stat.fractionLost
 
                 trackStats.video[reportVideoIndex].jitter = stat.jitter
                 trackStats.video[reportVideoIndex].roundTripTime = stat.roundTripTime
                 trackStats.video[reportVideoIndex].bytesSent = outboundRTPReport.bytesSent
               } else if (stat.kind === 'audio') {
-                const diffPacketsSent = outboundRTPReport.packetsSent-trackStats.audio.packetsSent
+                const diffPacketsSent = outboundRTPReport.packetsSent - trackStats.audio.packetsSent
                 trackStats.audio.packetsSent = outboundRTPReport.packetsSent
-                const diffPacketsLost = stat.packetsLost-trackStats.audio.packetsLost
+                const diffPacketsLost = stat.packetsLost - trackStats.audio.packetsLost
                 trackStats.audio.packetsLost = stat.packetsLost
-                trackStats.audio.instantPacketLossPercent = 100*diffPacketsLost/diffPacketsSent
+                trackStats.audio.instantPacketLossPercent = 100 * diffPacketsLost / diffPacketsSent
                 trackStats.audio.fractionLost = stat.fractionLost
 
                 trackStats.audio.jitter = stat.jitter
@@ -326,13 +324,13 @@ const loopGetStats = async () => {
           }
         })
 
-//         console.log(
-//           `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] element :`,
-//           element
-//         )
+        //         console.log(
+        //           `[${rtcRtpSender.track.kind}][${rtcRtpSender.constructor.name}] element :`,
+        //           element
+        //         )
       } catch (error) {
         console.log(
-          "[webrtc_getstats_extension] Failed to get stats for rtcRtpSender :", error
+          '[webrtc_getstats_extension] Failed to get stats for rtcRtpSender :', error
         )
       }
 
@@ -343,12 +341,12 @@ const loopGetStats = async () => {
             // No data to compare with
             return
           }
-          const diffBytesSent = value.bytesSent-rtcRtpSenderStatsClone.stats.video[key].bytesSent
-          value.bitrate = diffBytesSent*8/interval
+          const diffBytesSent = value.bytesSent - rtcRtpSenderStatsClone.stats.video[key].bytesSent
+          value.bitrate = diffBytesSent * 8 / interval
         })
 
-        rtcRtpSenderStats.stats.audio.bitrate = (rtcRtpSenderStats.stats.audio.bytesSent-rtcRtpSenderStatsClone.stats.audio.bytesSent)*8/interval
-        rtcRtpSenderStats.stats.bitrate = (rtcRtpSenderStats.stats.bytesSent-rtcRtpSenderStatsClone.stats.bytesSent)*8/interval
+        rtcRtpSenderStats.stats.audio.bitrate = (rtcRtpSenderStats.stats.audio.bytesSent - rtcRtpSenderStatsClone.stats.audio.bytesSent) * 8 / interval
+        rtcRtpSenderStats.stats.bitrate = (rtcRtpSenderStats.stats.bytesSent - rtcRtpSenderStatsClone.stats.bytesSent) * 8 / interval
       }
     }
   }

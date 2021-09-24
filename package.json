@@ -10,6 +10,9 @@
     "type": "git",
     "url": "git+https://github.com/phsultan/webrtc_publisher_stats.git"
   },
+  "standard": {
+    "globals": [ "chrome", "RTCPeerConnection" ]
+  },
   "keywords": [
     "WebRTC",
     "stats"
@@ -21,6 +24,6 @@
   },
   "homepage": "https://github.com/phsultan/webrtc_publisher_stats#readme",
   "devDependencies": {
-    "eslint": "^7.32.0"
+    "standard": "^16.0.3"
   }
 }
