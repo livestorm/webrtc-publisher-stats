@@ -324,8 +324,6 @@ const loopGetStats = async () => {
                   }
                 }
 
-                console.log('remote-inbound-rtp :', stat)
-                console.log('outboundRTPReport :', outboundRTPReport)
                 const diffFramesSent = outboundRTPReport.framesSent - trackStats.video[reportVideoIndex].framesSent
                 trackStats.video[reportVideoIndex].frameRate = diffFramesSent / interval
                 trackStats.video[reportVideoIndex].framesSent = outboundRTPReport.framesSent
