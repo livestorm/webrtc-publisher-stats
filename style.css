@@ -1,6 +1,5 @@
 .webrtc-getstats-extension-container {
-  position: fixed;
-  padding: 10;
+  position: absolute;
   width: 200px;
   height: 400px;
   top: 0;
@@ -11,5 +10,16 @@
 }
 
 .stream-class {
-  margin-top: 5px
+  margin: 5px
+}
+
+.webrtc-getstats-extension-header {
+  height: 30px;
+  padding: 5px;
+  cursor: move;
+  text-align: center;
+}
+
+.webrtc-getstats-extension-header:hover {
+  background-color: rgb(32,32,32);
 }

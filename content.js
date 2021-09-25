@@ -43,6 +43,13 @@ const updateHTML = (stats) => {
     container = document.createElement('div')
     container.id = domPrefix
     container.className = domPrefix + '-container'
+    const header = document.createElement('div')
+    header.className = domPrefix + '-header'
+    const title = document.createElement('div')
+    title.innerText = 'WebRTC stats'
+
+    header.appendChild(title)
+    container.appendChild(header)
     document.body.appendChild(container)
   }
 
