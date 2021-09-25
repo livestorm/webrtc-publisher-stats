@@ -1,23 +1,31 @@
 .webrtc-getstats-extension-container {
   position: absolute;
   width: 200px;
-  height: 400px;
   top: 0;
   right: 0;
   z-index: 10000;
-  background-color: black;
+  background: trasnparent;
   color: lightgreen;
 }
 
 .stream-class {
-  margin: 5px
+  margin: 0 5px 5px 5px
 }
 
 .webrtc-getstats-extension-header {
+  background-color: black;
   height: 30px;
   padding: 5px;
   cursor: move;
   text-align: center;
+  opacity: 100%;
+}
+
+.webrtc-getstats-extension-body {
+  opacity: 60%;
+  background-color: black;
+  display: none;
+  height: 0px;
 }
 
 .webrtc-getstats-extension-header:hover {

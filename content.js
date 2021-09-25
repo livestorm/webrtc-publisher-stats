@@ -1,5 +1,6 @@
 const domPrefix = 'webrtc-getstats-extension'
 const interval = 5 // in seconds
+const BODY_HEIGHT= '400px'
 
 const findDOMElementForTrack = (track) => {
   let foundElement = null
@@ -47,9 +48,22 @@ const updateHTML = (stats) => {
     header.className = domPrefix + '-header'
     const title = document.createElement('div')
     title.innerText = 'WebRTC stats'
+    const body = document.createElement('div')
+    body.className = domPrefix + '-body'
+
+    header.addEventListener('dblclick', (e) => {
+      if (body.style.height !== BODY_HEIGHT) {
+        body.style.height = BODY_HEIGHT
+        body.style.display = 'block'
+      } else {
+        body.style.height = 0
+        body.style.display = 'none'
+      }
+    })
 
     header.appendChild(title)
     container.appendChild(header)
+    container.appendChild(body)
     document.body.appendChild(container)
   }
 
@@ -143,7 +157,7 @@ const updateHTML = (stats) => {
 
       wrapper.appendChild(audioWrapper)
       wrapper.appendChild(videoWrapper)
-      container.appendChild(wrapper)
+      container.querySelector(`.${domPrefix}-body`).appendChild(wrapper)
       return
     }
 
