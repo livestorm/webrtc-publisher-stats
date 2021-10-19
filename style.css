@@ -6,6 +6,7 @@
   z-index: 10000;
   background: trasnparent;
   color: lightgreen;
+  display: none;
 }
 
 .stream-class {

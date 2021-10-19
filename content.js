@@ -233,9 +233,9 @@ const clearMediaStreamsFromStats = (stats) => {
 }
 
 const loopGetStats = async () => {
-  if (!window._webrtc_getstats?.peerConnections) {
-    return
-  }
+  const container = document.querySelector('#' + domPrefix)
+  // Change this variable to true if we find at least one RTCRtpSender to display
+  let displayContainer = false
 
   for (const pc of window._webrtc_getstats.peerConnections) {
     if (pc.iceConnectionState !== 'completed' && pc.iceConnectionState !== 'connected') {
@@ -255,6 +255,8 @@ const loopGetStats = async () => {
         // Cannot find DOM element that matches with MediaTrack
         continue
       }
+
+      displayContainer = true
 
       //       let container = document.querySelector(
       //         "#" + domPrefix + "_" + element.srcObject.id
@@ -384,6 +386,10 @@ const loopGetStats = async () => {
         rtcRtpSenderStats.stats.bitrate = (rtcRtpSenderStats.stats.bytesSent - rtcRtpSenderStatsClone.stats.bytesSent) * 8 / interval
       }
     }
+  }
+
+  if (container && container.style) {
+    container.style.display = displayContainer ? 'block' : 'none'
   }
 
   updateHTML(window._webrtc_getstats.rtcRtpSenderStats)
