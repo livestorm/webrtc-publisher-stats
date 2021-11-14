@@ -161,9 +161,11 @@ const updateHTML = (stats) => {
       return
     }
 
-    domElement.querySelector('.audio .rtt').innerText = `audio RTT : ${stats[key].stats.audio.roundTripTime}s`
-    domElement.querySelector('.audio .bitrate').innerText = `audio bitrate : ${stats[key].stats.audio.bitrate ? Math.round(stats[key].stats.audio.bitrate / 1000) : 0} kbps`
-    domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `audio loss : ${Math.round(stats[key].stats.audio.instantPacketLossPercent)}%`
+    domElement.querySelector('.audio .rtt').innerText = `audio RTT : ${audioRoundTripTime}s`
+    domElement.querySelector('.audio .bitrate').innerText = `audio bitrate : ${audioBitrateKbits} kbps`
+    domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `audio loss : ${audioInstantPacketLossPercent}%`
+    domElement.querySelector('.audio .jitter').innerText = `audio jitter : ${audioJitter}%`
+
     Object.entries(stats[key].stats.video).forEach(([key, value]) => {
       let videoStatElement = domElement.querySelector(`.video .dimensions-${key}`)
       if (!videoStatElement && !isNaN(value.bitrate) && value.bitrate > 0) {
