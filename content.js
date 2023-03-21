@@ -70,7 +70,7 @@ const updateHTML = (stats) => {
   makeDraggable(container)
 
   Object.keys(stats).forEach(key => {
-    const domElement = document.querySelector(`#${domPrefix} .mediastreamid-${key}`)
+    const domElement = document.querySelector(`#${domPrefix} .mediastreamtrack-${key}`)
 
     const audioBitrate = stats[key].stats.audio.bitrate
     let audioRoundTripTime = 0
@@ -97,7 +97,7 @@ const updateHTML = (stats) => {
     if (!domElement) {
       const wrapper = document.createElement('div')
       wrapper.classList.add('stream-class')
-      wrapper.classList.add(`mediastreamid-${key}`)
+      wrapper.classList.add(`mediastreamtrack-${key}`)
 
       const audioWrapper = document.createElement('div')
       audioWrapper.classList.add('audio')
@@ -214,22 +214,11 @@ const updateHTML = (stats) => {
   })
 }
 
-const clearMediaStreamsFromStats = (stats) => {
+const clearMediaStreamsFromStats = (stats, activeTracks) => {
   Object.keys(stats).forEach(key => {
-    let trackExistsInDOM = false
-    document.querySelectorAll('audio, video').forEach((element) => {
-      if (!element?.srcObject) {
-        return
-      }
-
-      if (element.srcObject.id === key) {
-        trackExistsInDOM = true
-      }
-    })
-
-    if (!trackExistsInDOM) {
+    if (!activeTracks.includes(key)) {
       delete stats[key]
-      document.querySelector(`#${domPrefix} .mediastreamid-${key}`).remove()
+      document.querySelector(`#${domPrefix} .mediastreamtrack-${key}`).remove()
     }
   })
 }
@@ -238,6 +227,7 @@ const loopGetStats = async () => {
   const container = document.querySelector('#' + domPrefix)
   // Change this variable to true if we find at least one RTCRtpSender to display
   let displayContainer = false
+  const activeMediaStreamTracks = []
 
   for (const pc of window._webrtc_getstats.peerConnections) {
     if (pc.iceConnectionState !== 'completed' && pc.iceConnectionState !== 'connected') {
@@ -255,8 +245,15 @@ const loopGetStats = async () => {
       const element = findDOMElementForTrack(rtcRtpSender.track)
       if (!element || !element.srcObject) {
         // Cannot find DOM element that matches with MediaTrack
+        // continue
+      }
+
+      const mediaStreamTrackId = rtcRtpSender.track?.id
+      if (!mediaStreamTrackId) {
         continue
       }
+
+      activeMediaStreamTracks.push(mediaStreamTrackId)
 
       displayContainer = true
 
@@ -273,7 +270,7 @@ const loopGetStats = async () => {
       //         element.parentNode.appendChild(container)
       //       }
 
-      const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id]
+      const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId]
 
       if (!rtcRtpSenderStats) {
         /**
@@ -283,7 +280,7 @@ const loopGetStats = async () => {
          * - store the MediaStream track
          * - gather stats
          */
-        window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id] = {
+        window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId] = {
           type: rtcRtpSender.constructor.name,
           stats: {
             rtt: 0,
@@ -302,7 +299,7 @@ const loopGetStats = async () => {
 
       try {
         const trackStats =
-          window._webrtc_getstats.rtcRtpSenderStats[element.srcObject.id].stats
+          window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId].stats
 
         const stats = await rtcRtpSender.getStats()
 
@@ -396,7 +393,7 @@ const loopGetStats = async () => {
 
   updateHTML(window._webrtc_getstats.rtcRtpSenderStats)
 
-  clearMediaStreamsFromStats(window._webrtc_getstats.rtcRtpSenderStats)
+  clearMediaStreamsFromStats(window._webrtc_getstats.rtcRtpSenderStats, activeMediaStreamTracks)
 
   setTimeout(loopGetStats, interval * 1000)
 }
