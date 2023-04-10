@@ -293,9 +293,11 @@ const loopGetStats = async () => {
             }
           }
         }
-      } else if (!rtcRtpSenderStatsClone) {
-        rtcRtpSenderStatsClone = JSON.parse(JSON.stringify(rtcRtpSenderStats))
+
+        continue
       }
+
+      rtcRtpSenderStatsClone = JSON.parse(JSON.stringify(rtcRtpSenderStats))
 
       try {
         const trackStats =
