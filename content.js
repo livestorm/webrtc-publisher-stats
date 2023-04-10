@@ -292,21 +292,10 @@ const loopGetStats = async () => {
       const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId]
 
       if (!rtcRtpSenderStats) {
-        /**
-         * Create stats object
-         * - type : RTCRtpReceiver or RTCRtpSender
-         * - identify it with the corresponding MediaStream id in the DOM
-         * - store the MediaStream track
-         * - gather stats
-         */
         window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId] = {
           type: rtcRtpSender.constructor.name,
           kind: rtcRtpSender.track.kind,
           stats: {
-            rtt: 0,
-            bytesSent: 0,
-            bitrate: 0,
-            availableOutgoingBitrate: 0,
             audio: {
             },
             video: {
