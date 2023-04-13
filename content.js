@@ -1,6 +1,5 @@
 const domPrefix = 'webrtc-getstats-extension'
 const interval = 5 // in seconds
-const BODY_HEIGHT= '400px'
 
 const findDOMElementForTrack = (track) => {
   let foundElement = null
@@ -52,12 +51,10 @@ const updateHTML = (stats) => {
     body.className = domPrefix + '-body'
 
     header.addEventListener('dblclick', (e) => {
-      if (body.style.height !== BODY_HEIGHT) {
-        body.style.height = BODY_HEIGHT
-        body.style.display = 'block'
-      } else {
-        body.style.height = 0
+      if (body.style.display !== 'none') {
         body.style.display = 'none'
+      } else {
+        body.style.display = 'block'
       }
     })
 

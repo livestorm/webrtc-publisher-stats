@@ -40,7 +40,7 @@
   opacity: 60%;
   background-color: black;
   display: none;
-  height: 0px;
+  padding: 20px 0;
 }
 
 .webrtc-getstats-extension-header:hover {
