@@ -10,7 +10,21 @@
 }
 
 .stream-class {
-  margin: 0 5px 5px 5px
+  margin: 5px;
+}
+
+.stream-class > div {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow-x: hidden;
+}
+
+.stream-class .audio {
+  padding: 0 5px
+}
+
+.stream-class .video {
+  padding: 0 5px
 }
 
 .webrtc-getstats-extension-header {
