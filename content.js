@@ -112,20 +112,20 @@ const updateHTML = (stats) => {
 
           const audioRoundTripTimeElement = document.createElement('div')
           audioRoundTripTimeElement.classList.add('rtt')
-          audioRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${audioRoundTripTime}s`))
+          audioRoundTripTimeElement.appendChild(document.createTextNode(`RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`))
           const audioBitrateElem = document.createElement('div')
           audioBitrateElem.classList.add('bitrate')
           audioBitrateElem.appendChild(document.createTextNode(`bitrate : ${audioBitrateKbits} kbps`))
-          const audioInstantPacketLossPercentElem = document.createElement('div')
-          audioInstantPacketLossPercentElem.classList.add('instant-packet-loss-percent')
-          audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`loss : ${audioInstantPacketLossPercent}%`))
+//           const audioInstantPacketLossPercentElem = document.createElement('div')
+//           audioInstantPacketLossPercentElem.classList.add('instant-packet-loss-percent')
+//           audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`loss : ${audioInstantPacketLossPercent}%`))
 //           const audioJitterElement = document.createElement('div')
 //           audioJitterElement.classList.add('jitter')
 //           audioJitterElement.appendChild(document.createTextNode(`jitter : ${audioJitter}`))
 
           audioWrapper.appendChild(audioRoundTripTimeElement)
           audioWrapper.appendChild(audioBitrateElem)
-          audioWrapper.appendChild(audioInstantPacketLossPercentElem)
+//          audioWrapper.appendChild(audioInstantPacketLossPercentElem)
 //          audioWrapper.appendChild(audioJitterElement)
           wrapper.appendChild(audioWrapper)
         }
@@ -148,10 +148,10 @@ const updateHTML = (stats) => {
 
             const videoRoundTripTimeElement = document.createElement('div')
             videoRoundTripTimeElement.classList.add('rtt')
-            videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${value.roundTripTime}s`))
-            const videoLossElement = document.createElement('div')
-            videoLossElement.classList.add('instant-packet-loss-percent')
-            videoLossElement.appendChild(document.createTextNode(`loss : ${Math.round(value.instantPacketLossPercent)}%`))
+            videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT / loss: ${value.roundTripTime}s / ${value.instantPacketLossPercent}%`))
+//             const videoLossElement = document.createElement('div')
+//             videoLossElement.classList.add('instant-packet-loss-percent')
+//             videoLossElement.appendChild(document.createTextNode(`loss : ${Math.round(value.instantPacketLossPercent)}%`))
 //             const videoJitterElement = document.createElement('div')
 //             videoJitterElement.classList.add('jitter')
 //             videoJitterElement.appendChild(document.createTextNode(`jitter : ${value.jitter.toFixed(3)}`))
@@ -162,7 +162,7 @@ const updateHTML = (stats) => {
             videoStatElement.appendChild(videoStatTitleElement)
             videoStatElement.appendChild(videoRoundTripTimeElement)
             videoStatElement.appendChild(videoBitrateElement)
-            videoStatElement.appendChild(videoLossElement)
+//            videoStatElement.appendChild(videoLossElement)
 //             videoStatElement.appendChild(videoJitterElement)
             videoWrapper.appendChild(videoStatElement)
           })
@@ -180,9 +180,9 @@ const updateHTML = (stats) => {
 
     switch (stats[key].kind) {
       case 'audio':
-        domElement.querySelector('.audio .rtt').innerText = `RTT : ${audioRoundTripTime}s`
+        domElement.querySelector('.audio .rtt').innerText = `RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`
         domElement.querySelector('.audio .bitrate').innerText = `bitrate : ${audioBitrateKbits} kbps`
-        domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `loss : ${audioInstantPacketLossPercent}%`
+//        domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `loss : ${audioInstantPacketLossPercent}%`
 //         domElement.querySelector('.audio .jitter').innerText = `jitter : ${audioJitter}`
         break
       case 'video':
@@ -200,10 +200,10 @@ const updateHTML = (stats) => {
 
             const videoRoundTripTimeElement = document.createElement('div')
             videoRoundTripTimeElement.classList.add('rtt')
-            videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${value.roundTripTime}s`))
-            const videoLossElement = document.createElement('div')
-            videoLossElement.classList.add('instant-packet-loss-percent')
-            videoLossElement.appendChild(document.createTextNode(`loss : ${Math.round(value.instantPacketLossPercent)}%`))
+            videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT / loss: ${value.roundTripTime}s / ${Math.round(value.instantPacketLossPercent)}%`))
+//             const videoLossElement = document.createElement('div')
+//             videoLossElement.classList.add('instant-packet-loss-percent')
+//             videoLossElement.appendChild(document.createTextNode(`loss : ${Math.round(value.instantPacketLossPercent)}%`))
 //             const videoJitterElement = document.createElement('div')
 //             videoJitterElement.classList.add('jitter')
 //             videoJitterElement.appendChild(document.createTextNode(`jitter : ${value.jitter.toFixed(3)}`))
@@ -216,7 +216,7 @@ const updateHTML = (stats) => {
             videoStatElement.appendChild(videoStatTitleElement)
             videoStatElement.appendChild(videoRoundTripTimeElement)
             videoStatElement.appendChild(videoBitrateElement)
-            videoStatElement.appendChild(videoLossElement)
+//            videoStatElement.appendChild(videoLossElement)
 //             videoStatElement.appendChild(videoJitterElement)
             domElement.querySelector('.video').appendChild(videoStatElement)
           } else if (videoStatElement) {
@@ -224,8 +224,8 @@ const updateHTML = (stats) => {
               // bitrate set to 0, remove video track stats from the DOM
               videoStatElement.remove()
             } else {
-              domElement.querySelector(`.video .dimensions-${key} .rtt`).innerText = `RTT : ${value.roundTripTime}s`
-              domElement.querySelector(`.video .dimensions-${key} .instant-packet-loss-percent`).innerText = `loss : ${Math.round(value.instantPacketLossPercent)}%`
+              domElement.querySelector(`.video .dimensions-${key} .rtt`).innerText = `RTT / loss: ${value.roundTripTime}s / ${Math.round(value.instantPacketLossPercent)}%`
+//               domElement.querySelector(`.video .dimensions-${key} .instant-packet-loss-percent`).innerText = `loss : ${Math.round(value.instantPacketLossPercent)}%`
 //               domElement.querySelector(`.video .dimensions-${key} .jitter`).innerText = `jitter : ${value.jitter.toFixed(3)}`
               domElement.querySelector(`.video .dimensions-${key} .bitrate`).innerText = `bitrate : ${value.bitrate ? Math.round(value.bitrate / 1000) : 0} kbps`
             }
