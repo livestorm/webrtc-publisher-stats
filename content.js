@@ -96,8 +96,16 @@ const updateHTML = (stats) => {
 
     if (!domElement) {
       const wrapper = document.createElement('div')
+      const codecElem = document.createElement('div')
+      codecElem.appendChild(document.createTextNode(`codec: ${stats[key].codec?.mimeType}`))
+
+      const labelElem = document.createElement('div')
+      labelElem.appendChild(document.createTextNode(`${stats[key].label}`))
+
       wrapper.classList.add('stream-class')
       wrapper.classList.add(`mediastreamtrack-${key}`)
+      wrapper.appendChild(labelElem)
+      wrapper.appendChild(codecElem)
 
       switch (stats[key].kind) {
         case 'audio': {
@@ -290,11 +298,15 @@ const loopGetStats = async () => {
       //       }
 
       const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId]
+      const rtcRtpSenderParameters = rtcRtpSender.getParameters()
+      const [codec] = rtcRtpSenderParameters ? rtcRtpSenderParameters.codecs : []
 
       if (!rtcRtpSenderStats) {
         window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId] = {
           type: rtcRtpSender.constructor.name,
           kind: rtcRtpSender.track.kind,
+          label: rtcRtpSender.track.label,
+          codec,
           stats: {
             audio: {
             },
