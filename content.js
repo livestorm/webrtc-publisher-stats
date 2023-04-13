@@ -115,10 +115,10 @@ const updateHTML = (stats) => {
 
           const audioRoundTripTimeElement = document.createElement('div')
           audioRoundTripTimeElement.classList.add('rtt')
-          audioRoundTripTimeElement.appendChild(document.createTextNode(`audio RTT : ${audioRoundTripTime}s`))
+          audioRoundTripTimeElement.appendChild(document.createTextNode(`RTT : ${audioRoundTripTime}s`))
           const audioBitrateElem = document.createElement('div')
           audioBitrateElem.classList.add('bitrate')
-          audioBitrateElem.appendChild(document.createTextNode(`audio bitrate : ${audioBitrateKbits} kbps`))
+          audioBitrateElem.appendChild(document.createTextNode(`bitrate : ${audioBitrateKbits} kbps`))
           const audioInstantPacketLossPercentElem = document.createElement('div')
           audioInstantPacketLossPercentElem.classList.add('instant-packet-loss-percent')
           audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`loss : ${audioInstantPacketLossPercent}%`))
@@ -183,9 +183,9 @@ const updateHTML = (stats) => {
 
     switch (stats[key].kind) {
       case 'audio':
-        domElement.querySelector('.audio .rtt').innerText = `audio RTT : ${audioRoundTripTime}s`
-        domElement.querySelector('.audio .bitrate').innerText = `audio bitrate : ${audioBitrateKbits} kbps`
-        domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `audio loss : ${audioInstantPacketLossPercent}%`
+        domElement.querySelector('.audio .rtt').innerText = `RTT : ${audioRoundTripTime}s`
+        domElement.querySelector('.audio .bitrate').innerText = `bitrate : ${audioBitrateKbits} kbps`
+        domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `loss : ${audioInstantPacketLossPercent}%`
 //         domElement.querySelector('.audio .jitter').innerText = `jitter : ${audioJitter}`
         break
       case 'video':
@@ -214,7 +214,7 @@ const updateHTML = (stats) => {
             videoBitrateKbits = Math.round(value.bitrate / 1000)
             const videoBitrateElement = document.createElement('div')
             videoBitrateElement.classList.add('bitrate')
-            videoBitrateElement.appendChild(document.createTextNode(`video bitrate : ${videoBitrateKbits} kbps`))
+            videoBitrateElement.appendChild(document.createTextNode(`bitrate : ${videoBitrateKbits} kbps`))
 
             videoStatElement.appendChild(videoStatTitleElement)
             videoStatElement.appendChild(videoRoundTripTimeElement)
