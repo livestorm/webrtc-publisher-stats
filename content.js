@@ -69,28 +69,6 @@ const updateHTML = (stats) => {
   Object.keys(stats).forEach(key => {
     const domElement = document.querySelector(`#${domPrefix} .mediastreamtrack-${key}`)
 
-    const audioBitrate = stats[key].stats.audio.bitrate
-    let audioRoundTripTime = 0
-    let audioBitrateKbits = 0
-    let audioInstantPacketLossPercent = 0
-//    let audioJitter = 0
-
-    if (!isNaN(audioBitrate)) {
-      audioBitrateKbits = Math.round(audioBitrate / 1000)
-    }
-
-    if (stats[key].stats.audio.roundTripTime && !isNaN(stats[key].stats.audio.roundTripTime)) {
-      audioRoundTripTime = stats[key].stats.audio.roundTripTime
-    }
-
-//     if (stats[key].stats.audio.jitter && !isNaN(stats[key].stats.audio.jitter)) {
-//       audioJitter = stats[key].stats.audio.jitter.toFixed(3)
-//     }
-
-    if (stats[key].stats.audio.instantPacketLossPercent && !isNaN(stats[key].stats.audio.instantPacketLossPercent)) {
-      audioInstantPacketLossPercent = Math.round(stats[key].stats.audio.instantPacketLossPercent)
-    }
-
     if (!domElement) {
       const wrapper = document.createElement('div')
       const codecElem = document.createElement('div')
@@ -109,24 +87,7 @@ const updateHTML = (stats) => {
           console.log('New DOM element to add of kind audio')
           const audioWrapper = document.createElement('div')
           audioWrapper.classList.add('audio')
-
-          const audioRoundTripTimeElement = document.createElement('div')
-          audioRoundTripTimeElement.classList.add('rtt')
-          audioRoundTripTimeElement.appendChild(document.createTextNode(`RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`))
-          const audioBitrateElem = document.createElement('div')
-          audioBitrateElem.classList.add('bitrate')
-          audioBitrateElem.appendChild(document.createTextNode(`bitrate : ${audioBitrateKbits} kbps`))
-//           const audioInstantPacketLossPercentElem = document.createElement('div')
-//           audioInstantPacketLossPercentElem.classList.add('instant-packet-loss-percent')
-//           audioInstantPacketLossPercentElem.appendChild(document.createTextNode(`loss : ${audioInstantPacketLossPercent}%`))
-//           const audioJitterElement = document.createElement('div')
-//           audioJitterElement.classList.add('jitter')
-//           audioJitterElement.appendChild(document.createTextNode(`jitter : ${audioJitter}`))
-
-          audioWrapper.appendChild(audioRoundTripTimeElement)
-          audioWrapper.appendChild(audioBitrateElem)
-//          audioWrapper.appendChild(audioInstantPacketLossPercentElem)
-//          audioWrapper.appendChild(audioJitterElement)
+          audioWrapper.appendChild(document.createTextNode('Gathering data...'))
           wrapper.appendChild(audioWrapper)
         }
           break
@@ -180,10 +141,49 @@ const updateHTML = (stats) => {
 
     switch (stats[key].kind) {
       case 'audio':
-        domElement.querySelector('.audio .rtt').innerText = `RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`
-        domElement.querySelector('.audio .bitrate').innerText = `bitrate : ${audioBitrateKbits} kbps`
-//        domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `loss : ${audioInstantPacketLossPercent}%`
-//         domElement.querySelector('.audio .jitter').innerText = `jitter : ${audioJitter}`
+        case 'audio': {
+          const audioBitrate = stats[key].stats.audio.bitrate
+          let audioRoundTripTime = 0
+          let audioBitrateKbits = 0
+          let audioInstantPacketLossPercent = 0
+          //    let audioJitter = 0
+
+          if (!isNaN(audioBitrate)) {
+            audioBitrateKbits = Math.round(audioBitrate / 1000)
+          }
+
+          if (stats[key].stats.audio.roundTripTime && !isNaN(stats[key].stats.audio.roundTripTime)) {
+            audioRoundTripTime = stats[key].stats.audio.roundTripTime
+          }
+
+          //     if (stats[key].stats.audio.jitter && !isNaN(stats[key].stats.audio.jitter)) {
+          //       audioJitter = stats[key].stats.audio.jitter.toFixed(3)
+          //     }
+
+          if (stats[key].stats.audio.instantPacketLossPercent && !isNaN(stats[key].stats.audio.instantPacketLossPercent)) {
+            audioInstantPacketLossPercent = Math.round(stats[key].stats.audio.instantPacketLossPercent)
+          }
+
+          const rttAudioStatElement = domElement.querySelector('.audio .rtt')
+          const bitrateAudioStatElement = domElement.querySelector('.audio .bitrate')
+
+          if (rttAudioStatElement && bitrateAudioStatElement) {
+            console.log('1')
+            domElement.querySelector('.audio .rtt').innerText = `RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`
+            domElement.querySelector('.audio .bitrate').innerText = `bitrate : ${audioBitrateKbits} kbps`
+            //        domElement.querySelector('.audio .instant-packet-loss-percent').innerText = `loss : ${audioInstantPacketLossPercent}%`
+            //         domElement.querySelector('.audio .jitter').innerText = `jitter : ${audioJitter}`
+
+          } else {
+            const audioRoundTripTimeElement = document.createElement('div')
+            audioRoundTripTimeElement.classList.add('rtt')
+            audioRoundTripTimeElement.appendChild(document.createTextNode(`RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`))
+            const audioBitrateElem = document.createElement('div')
+            audioBitrateElem.classList.add('bitrate')
+            audioBitrateElem.appendChild(document.createTextNode(`bitrate : ${audioBitrateKbits} kbps`))
+            domElement.querySelector('.audio').replaceChildren(audioRoundTripTimeElement, audioBitrateElem)
+          }
+        }
         break
       case 'video':
         Object.entries(stats[key].stats.video).forEach(([key, value]) => {
