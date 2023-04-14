@@ -95,39 +95,7 @@ const updateHTML = (stats) => {
           console.log('New DOM element to add of kind video')
           const videoWrapper = document.createElement('div')
           videoWrapper.classList.add('video')
-          Object.entries(stats[key].stats.video).forEach(([key, value]) => {
-            if (!value.bitrate || isNaN(value.bitrate) || value.bitrate <= 0) {
-              return
-            }
-
-            const videoStatElement = document.createElement('div')
-            videoStatElement.classList.add(`dimensions-${key}`)
-
-            const videoStatTitleElement = document.createElement('div')
-            videoStatTitleElement.classList.add('title')
-            videoStatTitleElement.appendChild(document.createTextNode(`--- ${key} ---`))
-
-            const videoRoundTripTimeElement = document.createElement('div')
-            videoRoundTripTimeElement.classList.add('rtt')
-            videoRoundTripTimeElement.appendChild(document.createTextNode(`RTT / loss: ${value.roundTripTime}s / ${value.instantPacketLossPercent}%`))
-//             const videoLossElement = document.createElement('div')
-//             videoLossElement.classList.add('instant-packet-loss-percent')
-//             videoLossElement.appendChild(document.createTextNode(`loss : ${Math.round(value.instantPacketLossPercent)}%`))
-//             const videoJitterElement = document.createElement('div')
-//             videoJitterElement.classList.add('jitter')
-//             videoJitterElement.appendChild(document.createTextNode(`jitter : ${value.jitter.toFixed(3)}`))
-            const videoBitrateElement = document.createElement('div')
-            videoBitrateElement.classList.add('bitrate')
-            videoBitrateElement.appendChild(document.createTextNode(`bitrate : ${Math.round(value.bitrate / 1000)} kbps`))
-
-            videoStatElement.appendChild(videoStatTitleElement)
-            videoStatElement.appendChild(videoRoundTripTimeElement)
-            videoStatElement.appendChild(videoBitrateElement)
-//            videoStatElement.appendChild(videoLossElement)
-//             videoStatElement.appendChild(videoJitterElement)
-            videoWrapper.appendChild(videoStatElement)
-          })
-
+          videoWrapper.appendChild(document.createTextNode('Gathering data...'))
           wrapper.appendChild(videoWrapper)
         }
           break
@@ -186,6 +154,7 @@ const updateHTML = (stats) => {
         }
         break
       case 'video':
+        domElement.querySelector('.video').replaceChildren()
         Object.entries(stats[key].stats.video).forEach(([key, value]) => {
           let videoStatElement = domElement.querySelector(`.video .dimensions-${key}`)
           if (!videoStatElement && !isNaN(value.bitrate) && value.bitrate > 0) {
