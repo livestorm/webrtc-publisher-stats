@@ -1,10 +1,10 @@
 .webrtc-getstats-extension-container {
   position: absolute;
-  width: 200px;
+  width: 250px;
   top: 0;
   right: 0;
   z-index: 10000;
-  background: trasnparent;
+  background: transparent;
   color: lightgreen;
   display: none;
 }
