@@ -36,6 +36,8 @@ const findDOMElementForTrack = (track) => {
   return foundElement
 }
 
+const findCodec = (codecId, codecs) => codecs.find(c => codecId.includes(c.payloadType))
+
 const updateHTML = (stats) => {
   let container = document.querySelector('#' + domPrefix)
 
@@ -71,8 +73,6 @@ const updateHTML = (stats) => {
 
     if (!domElement) {
       const wrapper = document.createElement('div')
-      const codecElem = document.createElement('div')
-      codecElem.appendChild(document.createTextNode(`codec: ${stats[key].codec?.mimeType}`))
 
       const labelElem = document.createElement('div')
       labelElem.appendChild(document.createTextNode(`${stats[key].label}`))
@@ -80,7 +80,6 @@ const updateHTML = (stats) => {
       wrapper.classList.add('stream-class')
       wrapper.classList.add(`mediastreamtrack-${key}`)
       wrapper.appendChild(labelElem)
-      wrapper.appendChild(codecElem)
 
       switch (stats[key].kind) {
         case 'audio': {
@@ -106,6 +105,9 @@ const updateHTML = (stats) => {
       container.querySelector(`.${domPrefix}-body`).appendChild(wrapper)
       return
     }
+
+    const codecElem = document.createElement('div')
+    codecElem.appendChild(document.createTextNode(`codec: ${stats[key].codec?.mimeType}`))
 
     switch (stats[key].kind) {
       case 'audio':
@@ -149,12 +151,12 @@ const updateHTML = (stats) => {
             const audioBitrateElem = document.createElement('div')
             audioBitrateElem.classList.add('bitrate')
             audioBitrateElem.appendChild(document.createTextNode(`bitrate : ${audioBitrateKbits} kbps`))
-            domElement.querySelector('.audio').replaceChildren(audioRoundTripTimeElement, audioBitrateElem)
+            domElement.querySelector('.audio').replaceChildren(codecElem, audioRoundTripTimeElement, audioBitrateElem)
           }
         }
         break
       case 'video':
-        domElement.querySelector('.video').replaceChildren()
+        domElement.querySelector('.video').replaceChildren(codecElem)
         Object.entries(stats[key].stats.video).forEach(([key, value]) => {
           let videoStatElement = domElement.querySelector(`.video .dimensions-${key}`)
           if (!videoStatElement && !isNaN(value.bitrate) && value.bitrate > 0) {
@@ -264,15 +266,12 @@ const loopGetStats = async () => {
       //       }
 
       const rtcRtpSenderStats = window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId]
-      const rtcRtpSenderParameters = rtcRtpSender.getParameters()
-      const [codec] = rtcRtpSenderParameters ? rtcRtpSenderParameters.codecs : []
 
       if (!rtcRtpSenderStats) {
         window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId] = {
           type: rtcRtpSender.constructor.name,
           kind: rtcRtpSender.track.kind,
           label: rtcRtpSender.track.label,
-          codec,
           stats: {
             audio: {
             },
@@ -291,10 +290,13 @@ const loopGetStats = async () => {
           window._webrtc_getstats.rtcRtpSenderStats[mediaStreamTrackId].stats
 
         const stats = await rtcRtpSender.getStats()
+        const codecs = rtcRtpSender.getParameters()?.codecs || []
 
         stats.forEach((stat) => {
           switch (stat.type) {
             case 'remote-inbound-rtp': {
+              rtcRtpSenderStats.codec = findCodec(stat.codecId, codecs)
+
               const outboundRTPReport = stats.get(stat.localId)
               if (stat.kind === 'video' && outboundRTPReport?.frameHeight) {
                 const reportVideoIndex = `${outboundRTPReport.frameWidth}x${outboundRTPReport.frameHeight}`
