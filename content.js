@@ -98,7 +98,6 @@ const updateHTML = (stats) => {
         const bitrateAudioStatElement = domElement.querySelector('.audio .bitrate')
 
         if (rttAudioStatElement && bitrateAudioStatElement) {
-          console.log('1')
           domElement.querySelector('.audio .rtt').innerText = `RTT / loss: ${audioRoundTripTime}s / ${audioInstantPacketLossPercent}%`
           domElement.querySelector('.audio .bitrate').innerText = `bitrate : ${audioBitrateKbits} kbps`
         } else {
