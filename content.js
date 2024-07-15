@@ -3,6 +3,10 @@ const interval = 5 // in seconds
 
 const findCodec = (codecId, codecs) => codecs.find(c => codecId.includes(c.payloadType))
 
+const formatRTT = (number) => {
+  return Number.parseFloat(number).toFixed(3)
+}
+
 const updateHTML = (stats) => {
   let container = document.querySelector('#' + domPrefix)
 
@@ -87,7 +91,7 @@ const updateHTML = (stats) => {
         }
 
         if (stats[key].stats.audio.roundTripTime && !isNaN(stats[key].stats.audio.roundTripTime)) {
-          audioRoundTripTime = stats[key].stats.audio.roundTripTime
+          audioRoundTripTime = formatRTT(stats[key].stats.audio.roundTripTime)
         }
 
         if (stats[key].stats.audio.instantPacketLossPercent && !isNaN(stats[key].stats.audio.instantPacketLossPercent)) {
@@ -256,7 +260,7 @@ const loopGetStats = async () => {
                 trackStats.video[reportVideoIndex].fractionLost = stat.fractionLost
 
                 trackStats.video[reportVideoIndex].jitter = stat.jitter
-                trackStats.video[reportVideoIndex].roundTripTime = stat.roundTripTime
+                trackStats.video[reportVideoIndex].roundTripTime = formatRTT(stat.roundTripTime)
                 trackStats.video[reportVideoIndex].bytesSent = outboundRTPReport.bytesSent
               } else if (stat.kind === 'audio') {
                 const diffPacketsSent = outboundRTPReport.packetsSent - trackStats.audio.packetsSent
@@ -267,7 +271,7 @@ const loopGetStats = async () => {
                 trackStats.audio.fractionLost = stat.fractionLost
 
                 trackStats.audio.jitter = stat.jitter
-                trackStats.audio.roundTripTime = stat.roundTripTime
+                trackStats.audio.roundTripTime = formatRTT(stat.roundTripTime)
                 trackStats.audio.bytesSent = outboundRTPReport.bytesSent
               }
 
