@@ -7,35 +7,35 @@ const formatRTT = (number) => {
   return Number.parseFloat(number).toFixed(3)
 }
 
+const createContainer = () => {
+  const container = document.createElement('div')
+  container.id = domPrefix
+  container.className = domPrefix + '-container'
+  const header = document.createElement('div')
+  header.className = domPrefix + '-header'
+  const title = document.createElement('div')
+  title.innerText = 'WebRTC stats'
+  const body = document.createElement('div')
+  body.className = domPrefix + '-body'
+
+  header.addEventListener('dblclick', (e) => {
+    if (body.style.display !== 'none') {
+      body.style.display = 'none'
+    } else {
+      body.style.display = 'block'
+    }
+  })
+
+  header.appendChild(title)
+  container.appendChild(header)
+  container.appendChild(body)
+  document.body.appendChild(container)
+
+  return container
+}
+
 const updateHTML = (stats) => {
-  let container = document.querySelector('#' + domPrefix)
-
-  if (!container) {
-    container = document.createElement('div')
-    container.id = domPrefix
-    container.className = domPrefix + '-container'
-    const header = document.createElement('div')
-    header.className = domPrefix + '-header'
-    const title = document.createElement('div')
-    title.innerText = 'WebRTC stats'
-    const body = document.createElement('div')
-    body.className = domPrefix + '-body'
-
-    header.addEventListener('dblclick', (e) => {
-      if (body.style.display !== 'none') {
-        body.style.display = 'none'
-      } else {
-        body.style.display = 'block'
-      }
-    })
-
-    header.appendChild(title)
-    container.appendChild(header)
-    container.appendChild(body)
-    document.body.appendChild(container)
-  }
-
-  makeDraggable(container)
+  const container = document.querySelector('#' + domPrefix)
 
   Object.keys(stats).forEach(key => {
     const domElement = document.querySelector(`#${domPrefix} .mediastreamtrack-${key}`)
@@ -315,8 +315,6 @@ const loopGetStats = async () => {
   setTimeout(loopGetStats, interval * 1000)
 }
 
-setTimeout(loopGetStats, interval * 1000)
-
 /**
  * The code below make the window draggable
  * Sources :
@@ -397,3 +395,12 @@ const makeDraggable = (element) => {
     document.onmousemove = null
   }
 }
+
+/**
+ * create DOM element, make it draggable, and start loop to get stats
+ */
+const container = createContainer()
+
+makeDraggable(container)
+
+setTimeout(loopGetStats, interval * 1000)
