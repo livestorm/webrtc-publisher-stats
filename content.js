@@ -397,10 +397,15 @@ const makeDraggable = (element) => {
 }
 
 /**
- * create DOM element, make it draggable, and start loop to get stats
+ * Once the DOM's web page has been loaded and parsed, create DOM element
+ * to display WebRTC stats, make it draggable, and start loop to retrieve
+ * actual stats.
  */
-const container = createContainer()
 
-makeDraggable(container)
+document.addEventListener('DOMContentLoaded', (event) => {
+  const container = createContainer()
 
-setTimeout(loopGetStats, interval * 1000)
+  makeDraggable(container)
+
+  setTimeout(loopGetStats, interval * 1000)
+})
