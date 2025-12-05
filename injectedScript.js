@@ -1,35 +1,11 @@
-const inject =
-  '(' +
-  function () {
-    window._webrtc_getstats = {
-      peerConnections: [],
-      rtcRtpSenderStats: {}
-    }
-
-    // Pushes every newly created RTCPeerConnection to an array.
-    class customRTCPeerConnection extends RTCPeerConnection {
-      constructor (configuration) {
-        console.log('New PeerConnection !')
-
-        super(configuration)
-
-        window._webrtc_getstats.peerConnections.push(this)
-      }
-    }
-
-    window.RTCPeerConnection = customRTCPeerConnection
-  } +
-  ')();'
-
-// This script must be run before everything else because we overwrite
-// RTCPeerConnection.
+// Inject hook script before page scripts so we can override RTCPeerConnection.
 const injectedScript = document.createElement('script')
-injectedScript.textContent = inject
+injectedScript.setAttribute('src', chrome.runtime.getURL('pageHook.js'))
+injectedScript.addEventListener('load', () => injectedScript.remove())
 const parentNode = document.head || document.documentElement
 parentNode.insertBefore(injectedScript, parentNode.firstChild)
-injectedScript.parentNode.removeChild(injectedScript)
 
 const mainScript = document.createElement('script')
 mainScript.setAttribute('type', 'text/javascript')
-mainScript.setAttribute('src', chrome.extension.getURL('content.js'));
-(document.head || document.documentElement).appendChild(mainScript)
+mainScript.setAttribute('src', chrome.runtime.getURL('content.js'))
+;(document.head || document.documentElement).appendChild(mainScript)
